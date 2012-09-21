@@ -8,7 +8,6 @@ function HUD:initialize()
   self.drawCursor = true
   self.over = false
   self.overColor = { 255, 255, 255, 0 }
-  HUD.static.id = self
 
   self.score = Text:new{
     x = self.padding,
@@ -66,11 +65,7 @@ end
 
 function HUD:draw()
   if self.over then
-    -- transparent black background to bring text into focus more
-    love.graphics.pushColor(0, 0, 0, self.backgroundAlpha)
-    love.graphics.rectangle("fill", 0, 0, love.graphics.width, love.graphics.height)
-    love.graphics.popColor()
-    
+    drawBlackBg(self.backgroundAlpha) -- a bit of black to bring text into focus more
     self.overMsg:draw()
     self.overScore:draw()
     self.overHighscore:draw()

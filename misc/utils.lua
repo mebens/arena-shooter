@@ -56,6 +56,12 @@ function drawArc(x, y, r, angle1, angle2, segments)
   end  
 end
 
+function drawBlackBg(alpha)
+  love.graphics.pushColor(0, 0, 0, alpha)
+  love.graphics.rectangle("fill", 0, 0, love.graphics.width, love.graphics.height)
+  love.graphics.popColor()
+end
+
 function Entity:drawImage(image, x, y)
   image = image or self.image
   if self.color then love.graphics.pushColor(self.color) end

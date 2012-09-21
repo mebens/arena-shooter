@@ -20,7 +20,7 @@ end
 
 function Enemy:update(dt)
   PhysicalEntity.update(self, dt)
-  self.angle = math.angle(self.x, self.y, Player.id.x, Player.id.y)
+  self.angle = math.angle(self.x, self.y, self.world.player.x, self.world.player.y)
   self:applyForce(math.cos(self.angle) * Enemy.moveForce, math.sin(self.angle) * Enemy.moveForce)
 end
 

@@ -15,7 +15,6 @@ function Player:initialize(x, y)
   self.moveForce = 3500
   self.missileTime = 0.5
   self.missileTimer = self.missileTime
-  Player.static.id = self
   
   -- live/death system
   self.lives = 3

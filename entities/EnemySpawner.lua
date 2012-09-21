@@ -11,8 +11,8 @@ EnemySpawner.static.colors = {
 function EnemySpawner:initialize(x, y)
   Entity.initialize(self, x, y)
   self.visible = false
-  self.rate = math.random(2.5, 3)
-  self.timer = self.rate
+  self.baseRate = 2.5
+  self.timer = 0
 end
 
 function EnemySpawner:update(dt)
@@ -21,7 +21,7 @@ function EnemySpawner:update(dt)
   if self.timer > 0 then
     self.timer = self.timer - dt
   else
-    self.timer = self.timer + self.rate
+    self.timer = self.timer + self.baseRate + math.random()
     self.world:add(Enemy:new(self.x, self.y, EnemySpawner.colors[math.random(1, #EnemySpawner.colors)]))
   end
 end

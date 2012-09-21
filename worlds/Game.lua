@@ -13,20 +13,25 @@ function Game:initialize()
   Game.static.id = self
   love.physics.setMeter(50)
   
+  self.fade = Fade:new(0.5, true)
+  self.hud = HUD:new()
+  self.player = Player:new(love.graphics.width / 2, love.graphics.height / 2)
+  local padding = 40
+  
   self:add(
-    Fade:new(0.5, true),
-    HUD:new(),
+    self.fade,
+    self.hud,
     Barrier:new(),
-    Player:new(love.graphics.width / 2, love.graphics.height / 2),
-    EnemySpawner:new(40, 40),
-    EnemySpawner:new(love.graphics.width - 40, 40),
-    EnemySpawner:new(40, love.graphics.height - 40),
-    EnemySpawner:new(love.graphics.width - 40, love.graphics.height - 40)
+    self.player,
+    EnemySpawner:new(padding, padding),
+    EnemySpawner:new(love.graphics.width - padding, padding),
+    EnemySpawner:new(padding, love.graphics.height - padding),
+    EnemySpawner:new(love.graphics.width - padding, love.graphics.height - padding)
   )
 end
 
 function Game:start()
-  Fade.id:fadeIn()
+  self.fade:fadeIn()
 end
 
 function Game:update(dt)
@@ -51,17 +56,17 @@ function Game:update(dt)
         if self.slowmoTween then self.slowmoTween:stop() end
         self.slowmoTween = tween(self, 0.15, { deltaFactor = 0.25 })
         self.slowmoActive = true
-        Player.id:showSlowmo()
+        self.player:showSlowmo()
       end
     end
   elseif self.canReset and input.pressed("reset") then
-    Fade.id:fadeOut(self.reset, self)
+    self.fade:fadeOut(self.reset, self)
   end
   
   dt = dt * self.deltaFactor
   _G.dt = dt
   PhysicalWorld.update(self, dt)
-  if key.pressed.k then Player.id:die() end
+  if key.pressed.k then self.player:die() end
 end
 
 function Game:draw()
@@ -77,7 +82,7 @@ function Game:gameOver()
   if self.slowmoTween then self.slowmoTween:stop() end
   self.slowmoTween = tween(self, 0.25, { deltaFactor = 0.1 }, nil, self.stopGameOverSlowmo, self)
   self.over = true
-  HUD.id.drawCursor = false
+  self.hud.drawCursor = false
 end
 
 function Game:enemyKilled(enemy)
@@ -106,5 +111,5 @@ end
 function Game:gameOverSlowmoStopped()
   self.canReset = true
   data.score(self.score)
-  HUD.id:gameOver()
+  self.hud:gameOver()
 end

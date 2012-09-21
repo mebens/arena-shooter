@@ -21,9 +21,7 @@ end
 
 function PauseMenu:draw()
   Game.id:draw()
-  love.graphics.pushColor(0, 0, 0, 150)
-  love.graphics.rectangle("fill", 0, 0, love.graphics.width, love.graphics.height)
-  love.graphics.popColor()
+  drawBlackBg(150)
   World.draw(self)
 end
 

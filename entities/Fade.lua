@@ -5,14 +5,11 @@ function Fade:initialize(time, black)
   self.layer = -1
   self.time = time or 0.5
   self.alpha = black and 255 or 0
-  Fade.static.id = self
 end
 
 function Fade:draw()
   if self.alpha == 0 then return end
-  love.graphics.pushColor(0, 0, 0, self.alpha)
-  love.graphics.rectangle("fill", 0, 0, love.graphics.width, love.graphics.height)
-  love.graphics.popColor()
+  drawBlackBg(self.alpha)
 end
 
 function Fade:fadeOut(complete, completeArgs)

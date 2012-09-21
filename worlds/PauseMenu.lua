@@ -9,6 +9,7 @@ function PauseMenu:initialize()
   
   self.menu = Menu:new(self.menuInX, self.menuOutX, self.menuY)
   self.menu:add(MenuItem:new("Resume", self.resume, self, "escape"))
+  self.menu:add(MenuItem:new("Reset", self.reset, self))
   self.menu:add(MenuItem:new("Options", self.showOptions, self))
   self.menu:add(MenuItem:new("Quit", self.quit))
   self.options = OptionsMenu:new(self.menuInX, self.menuOutX, self.menuY, true, self.menu)
@@ -27,6 +28,11 @@ end
 
 function PauseMenu:resume()
   Game.id:unpause()
+end
+
+function PauseMenu:reset()
+  Game.id:unpause()
+  Game.id:reset()
 end
 
 function PauseMenu:showOptions()

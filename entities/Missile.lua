@@ -7,7 +7,7 @@ Missile.static.particleImage = makeRectImage(15, 15)
 
 function Missile:initialize(x, y, angle, color)
   PhysicalEntity.initialize(self, x, y, "dynamic")
-  self.layer = 5
+  self.layer = 4
   self.width = Missile.width
   self.height = Missile.height
   self.angle = angle

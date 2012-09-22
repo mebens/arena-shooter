@@ -62,6 +62,11 @@ function drawBlackBg(alpha)
   love.graphics.popColor()
 end
 
+function setMouseCoords(world)
+  mouse.x = love.mouse.getX(world.camera)
+  mouse.y = love.mouse.getY(world.camera)
+end
+
 function Entity:drawImage(image, x, y)
   image = image or self.image
   if self.color then love.graphics.pushColor(self.color) end

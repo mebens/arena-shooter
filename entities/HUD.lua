@@ -2,7 +2,7 @@ HUD = class("HUD", Entity)
 
 function HUD:initialize()
   Entity.initialize(self)
-  self.layer = 1
+  self.layer = -1
   self.padding = 20
   self.debug = false
   self.drawCursor = true
@@ -13,7 +13,6 @@ function HUD:initialize()
     x = self.padding,
     y = self.padding,
     align = "center",
-    width = love.graphics.width - self.padding * 2,
     font = assets.fonts.main[32]
   }
   
@@ -21,7 +20,6 @@ function HUD:initialize()
     "GAME OVER",
     x = self.padding,
     align = "center",
-    width = love.graphics.width - self.padding * 2,
     font = assets.fonts.main[64],
     color = self.overColor
   }
@@ -29,7 +27,6 @@ function HUD:initialize()
   self.overScore = Text:new{
     x = self.padding,
     align = "center",
-    width = love.graphics.width - self.padding * 2,
     font = assets.fonts.main[40],
     color = self.overColor
   }
@@ -37,7 +34,6 @@ function HUD:initialize()
   self.overHighscore = Text:new{
     x = self.padding,
     align = "center",
-    width = love.graphics.width - self.padding * 2,
     font = assets.fonts.main[20],
     color = self.overColor
   }
@@ -46,15 +42,11 @@ function HUD:initialize()
     "Press space to play again",
     x = self.padding,
     align = "center",
-    width = love.graphics.width - self.padding * 2,
     font = assets.fonts.main[16],
     color = self.overColor
   }
   
-  self.overMsg.y = love.graphics.height / 2 - (self.overMsg.fontHeight + self.overScore.fontHeight) / 2
-  self.overScore.y = self.overMsg.y + self.overMsg.fontHeight - 10
-  self.overHighscore.y = self.overScore.y + self.overScore.fontHeight
-  self.resetMsg.y = self.overHighscore.y + self.overHighscore.fontHeight + 50
+  self:adjustText()
   self.debugInfo = Text:new{x = self.padding, y = self.padding, font = assets.fonts.main[16]}
   self.backgroundAlpha = 0
 end
@@ -79,7 +71,21 @@ function HUD:draw()
   
   self.score.text = self.world.score
   self.score:draw()
-  if self.drawCursor then self:drawImage(assets.images.crosshair, mouse.x, mouse.y) end
+  if self.drawCursor then self:drawImage(assets.images.crosshair, love.mouse.getRawX(), love.mouse.getRawY()) end
+end
+
+-- contains stuff dependent on resolution
+function HUD:adjustText()
+  -- width
+  for _, v in pairs{"score", "overMsg", "overScore", "overHighscore", "resetMsg"} do
+    self[v].width = love.graphics.width - self.padding * 2
+  end
+  
+  -- y positioning
+  self.overMsg.y = love.graphics.height / 2 - (self.overMsg.fontHeight + self.overScore.fontHeight) / 2
+  self.overScore.y = self.overMsg.y + self.overMsg.fontHeight - 10
+  self.overHighscore.y = self.overScore.y + self.overScore.fontHeight
+  self.resetMsg.y = self.overHighscore.y + self.overHighscore.fontHeight + 50
 end
 
 function HUD:gameOver()

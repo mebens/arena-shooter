@@ -9,6 +9,7 @@ EnemyChunk.static.image = makeRectImage(EnemyChunk.width, EnemyChunk.height)
 
 function EnemyChunk:initialize(x, y, angle, color)
   PhysicalEntity.initialize(self, x, y, "dynamic")
+  self.layer = 5
   self.width = EnemyChunk.width
   self.height = EnemyChunk.height
   self.angle = angle

@@ -2,16 +2,17 @@ Barrier = class("Barrier", PhysicalEntity)
 
 function Barrier:initialize()
   PhysicalEntity.initialize(self)
-  self.layer = 2
-  self.padding = 0
-  self.color = { 240, 240, 240 }
+  self.layer = 1
+  self.padding = 5
+  self.color = { 240, 240, 240, 220 }
 end
 
 function Barrier:added()
   self:setupBody()
+  self:alphaDown()
 
-  local w = love.graphics.width
-  local h = love.graphics.height
+  local w = self.world.width
+  local h = self.world.height
   local p = self.padding
   
   self.top = self:addShape(love.physics.newEdgeShape(p, p, w - p, p))
@@ -24,9 +25,17 @@ end
 function Barrier:draw()
   if self.padding < 1 then return end
   love.graphics.pushColor(self.color)
-  love.graphics.rectangle("fill", 0, 0, love.graphics.width, self.padding) -- top
-  love.graphics.rectangle("fill", 0, love.graphics.height - self.padding, love.graphics.width, self.padding) -- bottom
-  love.graphics.rectangle("fill", 0, 0, self.padding, love.graphics.height) -- left
-  love.graphics.rectangle("fill", love.graphics.width - self.padding, 0, self.padding, love.graphics.height) -- right
+  love.graphics.rectangle("fill", 0, 0, self.world.width, self.padding) -- top
+  love.graphics.rectangle("fill", 0, self.world.height - self.padding, self.world.width, self.padding) -- bottom
+  love.graphics.rectangle("fill", 0, 0, self.padding, self.world.height) -- left
+  love.graphics.rectangle("fill", self.world.width - self.padding, 0, self.padding, self.world.height) -- right
   love.graphics.popColor()
+end
+
+function Barrier:alphaDown()
+  tween(self.color, 1, { [4] = 150 }, nil, self.alphaUp, self)
+end
+
+function Barrier:alphaUp()
+  tween(self.color, 1, { [4] = 220 }, nil, self.alphaDown, self)
 end

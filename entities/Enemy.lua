@@ -6,7 +6,7 @@ Enemy.static.image = makeRectImage(Enemy.width, Enemy.height)
 
 function Enemy:initialize(x, y, color)
   PhysicalEntity.initialize(self, x, y, "dynamic")
-  self.layer = 4
+  self.layer = 3
   self.width = Enemy.width
   self.height = Enemy.height
   self.image = Enemy.image

@@ -9,7 +9,7 @@ end
 
 function Player:initialize(x, y)
   PhysicalEntity.initialize(self, x, y, "dynamic")
-  self.layer = 3
+  self.layer = 2
   self.width = 50
   self.height = 50
   self.moveForce = 3500

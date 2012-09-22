@@ -27,8 +27,7 @@ function data.apply()
     love.graphics.setMode(width, height, data.fullscreen, data.vsync)
     data.safeResolution = data.resolution
     data.safeFullscreen = data.fullscreen
-    ammo.camera.x = love.graphics.width / 2
-    ammo.camera.y = love.graphics.height / 2
+    if Game.id then Game.id:resolutionChanged() end
   else
     -- revert to something that works if we can
     if data.safeResolution then data.resolution = data.safeResolution end

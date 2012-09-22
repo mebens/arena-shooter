@@ -2,7 +2,7 @@ Fade = class("Fade", Entity)
 
 function Fade:initialize(time, black)
   Entity.initialize(self)
-  self.layer = -1
+  self.layer = -2
   self.time = time or 0.5
   self.alpha = black and 255 or 0
 end

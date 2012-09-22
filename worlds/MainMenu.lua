@@ -22,16 +22,15 @@ end
 
 function MainMenu:update(dt)
   World.update(self, dt)
+  setMouseCoords(self.background)
   self.background:update(dt)
-  
-  if not self.background.rm then
-    self.background:start()
-    self.background.rm = true
-  end
+  setMouseCoords(self)
 end
 
 function MainMenu:draw()
+  setMouseCoords(self.background)
   self.background:draw()
+  setMouseCoords(self)
   drawBlackBg(150)
   World.draw(self)
 end

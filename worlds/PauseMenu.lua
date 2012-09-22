@@ -21,7 +21,9 @@ function PauseMenu:start()
 end
 
 function PauseMenu:draw()
+  setMouseCoords(Game.id)
   Game.id:draw()
+  setMouseCoords(self)
   drawBlackBg(150)
   World.draw(self)
 end

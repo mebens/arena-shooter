@@ -1,22 +1,36 @@
 Game = class("Game", PhysicalWorld)
 
-function Game:initialize()
+function Game:initialize(width, height)
   PhysicalWorld.initialize(self, 0, 0)
+  love.physics.setMeter(50)
+  
+  self.width = width or 1440
+  self.height = height or 900
   self.score = 0
   self.paused = false
   self.over = false
+  self.deltaFactor = 1
+  Game.static.id = self
+
   self.maxSlowmo = 2
   self.slowmoRecharge = 0.2
   self.slowmo = self.maxSlowmo
   self.slowmoActive = false
-  self.deltaFactor = 1
-  Game.static.id = self
-  love.physics.setMeter(50)
-  
+    
   self.fade = Fade:new(0.5, true)
   self.hud = HUD:new()
-  self.player = Player:new(love.graphics.width / 2, love.graphics.height / 2)
+  self.player = Player:new(self.width / 2, self.height / 2)
   local padding = 40
+  
+  self:setupLayers{
+    [-2] = 0, -- fade
+    [-1] = 0, -- hud
+    [1] = 1, -- barrier
+    [2] = 1, -- player
+    [3] = 1, -- enemy
+    [4] = 1, -- missile
+    [5] = 1 -- particles
+  }
   
   self:add(
     self.fade,
@@ -24,9 +38,9 @@ function Game:initialize()
     Barrier:new(),
     self.player,
     EnemySpawner:new(padding, padding),
-    EnemySpawner:new(love.graphics.width - padding, padding),
-    EnemySpawner:new(padding, love.graphics.height - padding),
-    EnemySpawner:new(love.graphics.width - padding, love.graphics.height - padding)
+    EnemySpawner:new(self.width - padding, padding),
+    EnemySpawner:new(padding, self.height - padding),
+    EnemySpawner:new(self.width - padding, self.height - padding)
   )
 end
 
@@ -66,6 +80,7 @@ function Game:update(dt)
   dt = dt * self.deltaFactor
   _G.dt = dt
   PhysicalWorld.update(self, dt)
+  self:setCameraPos()
   if key.pressed.k then self.player:die() end
 end
 
@@ -89,6 +104,11 @@ function Game:enemyKilled(enemy)
   self.score = self.score + 1
 end
 
+function Game:resolutionChanged()
+  self:setCameraPos()
+  self.hud:adjustText()
+end
+
 function Game:pause()
   if not PauseMenu.id then PauseMenu:new() end
   ammo.world = PauseMenu.id
@@ -102,6 +122,11 @@ end
 
 function Game:reset()
   ammo.world = Game:new() -- quick, temporary way of doing it
+end
+
+function Game:setCameraPos()
+  self.camera.x = self.player.x - love.graphics.width / 2
+  self.camera.y = self.player.y - love.graphics.height / 2
 end
 
 function Game:stopGameOverSlowmo()

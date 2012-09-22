@@ -11,17 +11,22 @@ function Enemy:initialize(x, y, color)
   self.height = Enemy.height
   self.image = Enemy.image
   self.color = table.copy(color)
+  self.scale = 0
 end
 
 function Enemy:added()
   self:setupBody()
   self:addShape(love.physics.newRectangleShape(self.width, self.height))
+  self:animate(0.3, { scale = 1 })
 end
 
 function Enemy:update(dt)
   PhysicalEntity.update(self, dt)
   self.angle = math.angle(self.x, self.y, self.world.player.x, self.world.player.y)
-  self:applyForce(math.cos(self.angle) * Enemy.moveForce, math.sin(self.angle) * Enemy.moveForce)
+  
+  if self.scale == 1 then
+    self:applyForce(math.cos(self.angle) * Enemy.moveForce, math.sin(self.angle) * Enemy.moveForce)
+  end
 end
 
 function Enemy:draw()

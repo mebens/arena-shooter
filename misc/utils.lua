@@ -70,6 +70,17 @@ end
 function Entity:drawImage(image, x, y)
   image = image or self.image
   if self.color then love.graphics.pushColor(self.color) end
-  love.graphics.draw(image or self.image, x or self.x, y or self.y, self.angle, 1, 1, image:getWidth() / 2, image:getHeight() / 2)
+  
+  love.graphics.draw(
+    image or self.image,
+    x or self.x,
+    y or self.y,
+    self.angle,
+    self.scale or 1,
+    self.scale or 1,
+    image:getWidth() / 2,
+    image:getHeight() / 2
+  )
+  
   if self.color then love.graphics.popColor() end
 end

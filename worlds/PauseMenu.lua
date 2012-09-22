@@ -12,12 +12,15 @@ function PauseMenu:initialize()
   self.menu:add(MenuItem:new("Reset", self.reset, self))
   self.menu:add(MenuItem:new("Options", self.showOptions, self))
   self.menu:add(MenuItem:new("Quit", self.quit))
+  
   self.options = OptionsMenu:new(self.menuInX, self.menuOutX, self.menuY, true, self.menu)
-  self:add(self.menu, self.options)
+  self.fade = Fade:new()
+  self:add(self.fade, self.menu, self.options)
 end
 
 function PauseMenu:start()
   self.menu:activate(1)
+  self.fade.alpha = 0
 end
 
 function PauseMenu:draw()
@@ -33,8 +36,7 @@ function PauseMenu:resume()
 end
 
 function PauseMenu:reset()
-  Game.id:unpause()
-  Game.id:reset()
+  self.fade:fadeOut(self.resetFadeDone, self)
 end
 
 function PauseMenu:showOptions()
@@ -43,4 +45,9 @@ end
 
 function PauseMenu:quit()
   love.event.quit()
+end
+
+function PauseMenu:resetFadeDone()
+  Game.id:unpause()
+  Game.id:reset()
 end

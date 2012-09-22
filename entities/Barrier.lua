@@ -24,11 +24,15 @@ end
 
 function Barrier:draw()
   if self.padding < 1 then return end
+  local w = self.world.width
+  local h = self.world.height
+  local p = self.padding
+  
   love.graphics.pushColor(self.color)
-  love.graphics.rectangle("fill", 0, 0, self.world.width, self.padding) -- top
-  love.graphics.rectangle("fill", 0, self.world.height - self.padding, self.world.width, self.padding) -- bottom
-  love.graphics.rectangle("fill", 0, 0, self.padding, self.world.height) -- left
-  love.graphics.rectangle("fill", self.world.width - self.padding, 0, self.padding, self.world.height) -- right
+  love.graphics.rectangle("fill", 0, 0, w, p) -- top
+  love.graphics.rectangle("fill", 0, h - p, w, p) -- bottom
+  love.graphics.rectangle("fill", 0, p, p, h - p * 2) -- left
+  love.graphics.rectangle("fill", w - p, p, p, h - p * 2) -- right
   love.graphics.popColor()
 end
 

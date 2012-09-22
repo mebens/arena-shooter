@@ -14,7 +14,7 @@ function EnemyChunk:initialize(x, y, angle, color)
   self.height = EnemyChunk.height
   self.angle = angle
   self.color = color
-  self.color[4] = 255
+  self.color[4] = 200
   self.image = EnemyChunk.image
   EnemyChunk.count = EnemyChunk.count + 1
 end

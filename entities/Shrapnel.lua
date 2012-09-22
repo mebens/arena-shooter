@@ -18,7 +18,7 @@ function Shrapnel:initialize(x, y, angle, color)
   self.height = Shrapnel.height
   self.angle = angle
   self.color = table.copy(color)
-  self.color[4] = 255
+  self.color[4] = 230
   self.image = Shrapnel.image
 end
 

@@ -1,11 +1,8 @@
 EnemySpawner = class("EnemySpawner", Entity)
 EnemySpawner.static.colors = {
-  { 240, 240, 240 },
-  { 220, 220, 220 },
-  { 200, 200, 200 },
-  { 180, 180, 180 },
-  { 160, 160, 160 },
-  { 140, 140, 140 }
+  { 230, 230, 230 },
+  { 210, 210, 210 },
+  { 190, 190, 190 }
 }
   
 function EnemySpawner:initialize(x, y)

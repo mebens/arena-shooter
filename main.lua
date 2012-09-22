@@ -5,11 +5,11 @@ require("ammo.tweens")
 
 require("misc.utils")
 require("misc.Text")
+require("misc.ColorRotator")
 require("modules.data")
 require("modules.assets")
 require("modules.blur")
 
-require("entities.ColorRotator")
 require("entities.Fade")
 require("entities.HUD")
 require("entities.Barrier")

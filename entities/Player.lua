@@ -1,4 +1,5 @@
 Player = class("Player", PhysicalEntity):include(ColorRotator)
+Player.static.maxLives = 3
 
 do
   local aimWidth = 400
@@ -17,7 +18,7 @@ function Player:initialize(x, y)
   self.missileTimer = self.missileTime
   
   -- live/death system
-  self.lives = 3
+  self.lives = Player.maxLives
   self.flashTime = 0.25
   self.flashCount = 5
   self.flashes = 0

@@ -1,4 +1,5 @@
 HUD = class("HUD", Entity)
+HUD.static.lifeImage = makeRectImage(15, 20, 255, 255, 255, 200)
 
 function HUD:initialize()
   Entity.initialize(self)
@@ -7,13 +8,20 @@ function HUD:initialize()
   self.debug = false
   self.drawCursor = true
   self.over = false
+  self.playColor = { 255, 255, 255, 255 }
   self.overColor = { 255, 255, 255, 0 }
-
+  
   self.score = Text:new{
     x = self.padding,
     y = self.padding,
     align = "center",
-    font = assets.fonts.main[32]
+    font = assets.fonts.main[32],
+    color = self.playColor
+  }
+  
+  self.lives = {
+    spacing = 8,
+    text = Text:new{"Lives", x = self.padding, align = "center", font = assets.fonts.main[16], color = self.playColor}
   }
   
   self.overMsg = Text:new{
@@ -71,17 +79,29 @@ function HUD:draw()
   
   self.score.text = self.world.score
   self.score:draw()
+  self.lives.text:draw()
+  
+  for i = 0, self.world.player.lives - 1 do
+    local x = self.lives.x + (HUD.lifeImage:getWidth() + self.lives.spacing) * i
+    love.graphics.draw(HUD.lifeImage, x, self.lives.y)
+  end
+  
   if self.drawCursor then self:drawImage(assets.images.crosshair, love.mouse.getRawX(), love.mouse.getRawY()) end
 end
 
 -- contains stuff dependent on resolution
 function HUD:adjustText()
+  -- lives
+  self.lives.text.y = love.graphics.height - self.lives.text.fontHeight - self.padding
+  self.lives.x = love.graphics.width / 2 - (HUD.lifeImage:getWidth() * Player.maxLives + self.lives.spacing * (Player.maxLives - 1)) / 2
+  self.lives.y = self.lives.text.y - HUD.lifeImage:getHeight() - 5
+  
   -- width
-  for _, v in pairs{"score", "overMsg", "overScore", "overHighscore", "resetMsg"} do
-    self[v].width = love.graphics.width - self.padding * 2
+  for _, v in pairs{self.score, self.overMsg, self.overScore, self.overHighscore, self.resetMsg, self.lives.text} do
+    v.width = love.graphics.width - self.padding * 2
   end
   
-  -- y positioning
+  -- game over y positioning
   self.overMsg.y = love.graphics.height / 2 - (self.overMsg.fontHeight + self.overScore.fontHeight) / 2
   self.overScore.y = self.overMsg.y + self.overMsg.fontHeight - 10
   self.overHighscore.y = self.overScore.y + self.overScore.fontHeight
@@ -92,7 +112,7 @@ function HUD:gameOver()
   self.over = true
   self.overScore.text = "Score: " .. self.world.score
   self.overHighscore.text = "Highscore: " .. data.highscore
-  tween(self.score.color, 1, { [4] = 0 })
+  tween(self.playColor, 1, { [4] = 0 })
   tween(self.overColor, 1, { [4] = 255 })
   self:animate(1, { backgroundAlpha = 100 })
 end

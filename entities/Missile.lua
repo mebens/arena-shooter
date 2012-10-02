@@ -1,5 +1,5 @@
 Missile = class("Missile", PhysicalEntity)
-Missile.static.speed = 1000
+Missile.static.speed = 1200
 Missile.static.shakeDistance = 300
 Missile.static.shakeAmount = 50
 Missile.static.width = 30
@@ -37,9 +37,9 @@ end
 
 function Missile:added()
   self:setupBody()
-  self:setInertia(100)
   self.fixture = self:addShape(love.physics.newRectangleShape(Missile.width, Missile.height))
   self.fixture:setMask(2)
+  self.fixture:setSensor(true)
 end
 
 function Missile:update(dt)

@@ -52,5 +52,10 @@ function Shrapnel:die()
 end
 
 function Shrapnel:checkVelocity()
-  return math.distance(0, 0, self.velx, self.vely) > 1200
+  if not self.belowFatal then
+    self.belowFatal = math.distance(0, 0, self.velx, self.vely) > 1200
+    return self.belowFatal
+  else
+    return true
+  end
 end

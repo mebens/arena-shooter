@@ -1,5 +1,7 @@
 Missile = class("Missile", PhysicalEntity)
 Missile.static.speed = 1000
+Missile.static.shakeDistance = 300
+Missile.static.shakeAmount = 50
 Missile.static.width = 30
 Missile.static.height = 10
 Missile.static.image = makeRectImage(Missile.width, Missile.height)
@@ -62,5 +64,7 @@ end
 
 function Missile:explode()
   Shrapnel:explosion(self.x, self.y, math.random(40, 50), self.color, self.world)
+  local distScale = math.min(math.abs(math.distance(self.x, self.y, self.world.player.x, self.world.player.y)) / Missile.shakeDistance, 1)
+  self.world.camera:shake(math.scale(distScale, 0, 1, 1, 0) * Missile.shakeAmount)
   self.world = nil
 end

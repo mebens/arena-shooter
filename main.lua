@@ -6,6 +6,8 @@ require("ammo.tweens")
 require("misc.utils")
 require("misc.Text")
 require("misc.ColorRotator")
+require("misc.GameCamera")
+
 require("modules.data")
 require("modules.assets")
 require("modules.blur")

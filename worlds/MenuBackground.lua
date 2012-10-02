@@ -8,7 +8,7 @@ function MenuBackground:initialize()
   self.top = MissileSpawner:new(0, self.padding, math.tau / 4)
   self.bottom = MissileSpawner:new(0, self.height - self.padding, math.tau * 0.75)
   self:add(self.left, self.right, self.top, self.bottom)
-  self:setCameraPos()
+  self.camera:update()
 end
 
 function MenuBackground:start()

@@ -16,7 +16,8 @@ function Game:initialize(width, height)
   self.slowmoRecharge = 0.2
   self.slowmo = self.maxSlowmo
   self.slowmoActive = false
-    
+  
+  self.camera = GameCamera:new()
   self.fade = Fade:new(0.5, true)
   self.hud = HUD:new()
   self.player = Player:new(self.width / 2, self.height / 2)
@@ -80,7 +81,6 @@ function Game:update(dt)
   dt = dt * self.deltaFactor
   _G.dt = dt
   PhysicalWorld.update(self, dt)
-  self:setCameraPos()
   if key.pressed.k then self.player:die() end
 end
 
@@ -105,7 +105,7 @@ function Game:enemyKilled(enemy)
 end
 
 function Game:resolutionChanged()
-  self:setCameraPos()
+  self.camera:update()
   self.hud:adjustText()
 end
 
@@ -122,11 +122,6 @@ end
 
 function Game:reset()
   ammo.world = Game:new() -- quick, temporary way of doing it
-end
-
-function Game:setCameraPos()
-  self.camera.x = self.player.x - love.graphics.width / 2
-  self.camera.y = self.player.y - love.graphics.height / 2
 end
 
 function Game:stopGameOverSlowmo()

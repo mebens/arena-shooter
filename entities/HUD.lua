@@ -1,5 +1,6 @@
 HUD = class("HUD", Entity)
-HUD.static.lifeImage = makeRectImage(15, 20, 255, 255, 255, 200)
+HUD.static.lifeImage = makeRectImage(18, 20, 255, 255, 255, 230)
+HUD.static.lostLifeImage = makeRectImage(18, 20, 255, 255, 255, 80)
 
 function HUD:initialize()
   Entity.initialize(self)
@@ -80,12 +81,14 @@ function HUD:draw()
   self.score.text = self.world.score
   self.score:draw()
   self.lives.text:draw()
+  love.graphics.pushColor(self.playColor)
   
-  for i = 0, self.world.player.lives - 1 do
+  for i = 0, Player.maxLives - 1 do
     local x = self.lives.x + (HUD.lifeImage:getWidth() + self.lives.spacing) * i
-    love.graphics.draw(HUD.lifeImage, x, self.lives.y)
+    love.graphics.draw(i > self.world.player.lives - 1 and HUD.lostLifeImage or HUD.lifeImage, x, self.lives.y)
   end
   
+  love.graphics.popColor()
   if self.drawCursor then self:drawImage(assets.images.crosshair, love.mouse.getRawX(), love.mouse.getRawY()) end
 end
 

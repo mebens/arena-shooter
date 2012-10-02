@@ -37,6 +37,7 @@ end
 
 function Missile:added()
   self:setupBody()
+  self:setInertia(100)
   self.fixture = self:addShape(love.physics.newRectangleShape(Missile.width, Missile.height))
   self.fixture:setMask(2)
 end
@@ -53,7 +54,7 @@ function Missile:draw()
 end
 
 function Missile:collided(other, fixture, otherFixture, contact)
-  self:explode()
+  if other.class ~= Shrapnel or other:checkVelocity() then self:explode() end
   
   if other.class == Enemy then
     other:die()

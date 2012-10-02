@@ -40,7 +40,7 @@ function Shrapnel:draw()
 end
 
 function Shrapnel:collided(other, fixture, otherFixture, contact)
-  if other.class == Enemy and math.distance(0, 0, self.velx, self.vely) > 1200 then
+  if other.class == Enemy and self:checkVelocity() then
     other:die()
     self:die()
     self.tween:stop()
@@ -49,4 +49,8 @@ end
 
 function Shrapnel:die()
   self.world = nil
+end
+
+function Shrapnel:checkVelocity()
+  return math.distance(0, 0, self.velx, self.vely) > 1200
 end

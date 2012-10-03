@@ -1,7 +1,8 @@
-Game = class("Game", PhysicalWorld)
+Game = class("Game", PhysicalWorld):include(MessageEnabled)
 
 function Game:initialize(width, height)
   PhysicalWorld.initialize(self, 0, 0)
+  self:setupMessages()
   love.physics.setMeter(50)
   
   self.width = width or 1440

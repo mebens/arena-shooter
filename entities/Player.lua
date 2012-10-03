@@ -106,6 +106,7 @@ function Player:collided(other, fixture, otherFixture, contact)
   if other.class == Enemy then
     other:die()
     self.lives = self.lives - 1
+    self.world:sendMessage("player.lifeLost")
     
     if self.lives == 0 then
       self:die()

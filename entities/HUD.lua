@@ -1,6 +1,9 @@
 HUD = class("HUD", Entity)
-HUD.static.lifeImage = makeRectImage(18, 20, 255, 255, 255, 230)
-HUD.static.lostLifeImage = makeRectImage(18, 20, 255, 255, 255, 80)
+HUD.static.lifeImageWidth = 18
+HUD.static.lifeImageHeight = 20
+HUD.static.lifeImage = makeRectImage(HUD.lifeImageWidth, HUD.lifeImageHeight, 255, 255, 255, 230)
+HUD.static.lostLifeImage = makeRectImage(HUD.lifeImageWidth, HUD.lifeImageHeight, 255, 255, 255, 80)
+HUD.static.lostLifeParticle = makeRectImage(6, 6, 255, 255, 255, 230)
 
 function HUD:initialize()
   Entity.initialize(self)
@@ -11,6 +14,7 @@ function HUD:initialize()
   self.over = false
   self.playColor = { 255, 255, 255, 255 }
   self.overColor = { 255, 255, 255, 0 }
+  self.backgroundAlpha = 0
   
   self.score = Text:new{
     x = self.padding,
@@ -57,11 +61,26 @@ function HUD:initialize()
   
   self:adjustText()
   self.debugInfo = Text:new{x = self.padding, y = self.padding, font = assets.fonts.main[16]}
-  self.backgroundAlpha = 0
+  
+  local ps = love.graphics.newParticleSystem(HUD.lostLifeParticle, 20)
+  ps:setLifetime(0.05)
+  ps:setEmissionRate(1000)
+  ps:setParticleLife(0.4, 0.6)
+  ps:setSpread(math.tau)
+  ps:setColors(255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 0)
+  ps:setRotation(0, math.tau)
+  ps:setSpeed(40, 80)
+  ps:stop()
+  self.lifeParticles = ps
+end
+
+function HUD:added()
+  self.world:addListener("player.lifeLost", self.lifeLost, self)
 end
 
 function HUD:update(dt)
   if input.pressed("debug") then self.debug = not self.debug end
+  self.lifeParticles:update(dt)
 end
 
 function HUD:draw()
@@ -82,9 +101,10 @@ function HUD:draw()
   self.score:draw()
   self.lives.text:draw()
   love.graphics.pushColor(self.playColor)
+  love.graphics.draw(self.lifeParticles)
   
   for i = 0, Player.maxLives - 1 do
-    local x = self.lives.x + (HUD.lifeImage:getWidth() + self.lives.spacing) * i
+    local x = self.lives.x + (HUD.lifeImageWidth + self.lives.spacing) * i
     love.graphics.draw(i > self.world.player.lives - 1 and HUD.lostLifeImage or HUD.lifeImage, x, self.lives.y)
   end
   
@@ -96,8 +116,8 @@ end
 function HUD:adjustText()
   -- lives
   self.lives.text.y = love.graphics.height - self.lives.text.fontHeight - self.padding
-  self.lives.x = love.graphics.width / 2 - (HUD.lifeImage:getWidth() * Player.maxLives + self.lives.spacing * (Player.maxLives - 1)) / 2
-  self.lives.y = self.lives.text.y - HUD.lifeImage:getHeight() - 5
+  self.lives.x = love.graphics.width / 2 - (HUD.lifeImageWidth * Player.maxLives + self.lives.spacing * (Player.maxLives - 1)) / 2
+  self.lives.y = self.lives.text.y - HUD.lifeImageHeight - 5
   
   -- width
   for _, v in pairs{self.score, self.overMsg, self.overScore, self.overHighscore, self.resetMsg, self.lives.text} do
@@ -118,4 +138,10 @@ function HUD:gameOver()
   tween(self.playColor, 1, { [4] = 0 })
   tween(self.overColor, 1, { [4] = 255 })
   self:animate(1, { backgroundAlpha = 100 })
+end
+
+function HUD:lifeLost()
+  local offset = (HUD.lifeImageWidth + self.lives.spacing) * self.world.player.lives + HUD.lifeImageWidth / 2
+  self.lifeParticles:setPosition(self.lives.x + offset, self.lives.y + HUD.lifeImageHeight / 2)
+  self.lifeParticles:start()
 end

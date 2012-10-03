@@ -3,6 +3,7 @@ Shrapnel.static.width = 7
 Shrapnel.static.height = 7
 Shrapnel.static.minForce = 40
 Shrapnel.static.maxForce = 50
+Shrapnel.static.fatalVelocity = 1100
 Shrapnel.static.image = makeRectImage(Shrapnel.width, Shrapnel.height)
 
 function Shrapnel.static:explosion(x, y, amount, color, world)
@@ -53,7 +54,7 @@ end
 
 function Shrapnel:checkVelocity()
   if not self.belowFatal then
-    self.belowFatal = math.distance(0, 0, self.velx, self.vely) > 1200
+    self.belowFatal = math.distance(0, 0, self.velx, self.vely) > Shrapnel.fatalVelocity
     return self.belowFatal
   else
     return true

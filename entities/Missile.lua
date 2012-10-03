@@ -1,6 +1,6 @@
 Missile = class("Missile", PhysicalEntity)
 Missile.static.speed = 1200
-Missile.static.shakeDistance = 500
+Missile.static.shakeDistance = 450
 Missile.static.shakeAmount = 50
 Missile.static.shakeTime = 0.09
 Missile.static.width = 30
@@ -55,7 +55,8 @@ function Missile:draw()
 end
 
 function Missile:collided(other, fixture, otherFixture, contact)
-  if other.class ~= Shrapnel or other:checkVelocity() then self:explode() end
+  if other.class == EnemyChunk then return end
+  if other.class ~= Shrapnel or other:checkVelocity() then self:explode() end -- only explode for shrapnel if it has fatal velocity
   
   if other.class == Enemy then
     other:die()

@@ -3,7 +3,8 @@ Barrier = class("Barrier", PhysicalEntity)
 function Barrier:initialize()
   PhysicalEntity.initialize(self)
   self.layer = 1
-  self.padding = 5
+  self.visualPadding = 5
+  self.shapePadding = 20
   self.color = { 240, 240, 240, 220 }
 end
 
@@ -13,20 +14,21 @@ function Barrier:added()
 
   local w = self.world.width
   local h = self.world.height
-  local p = self.padding
+  local p = self.shapePadding
+  local vp = self.visualPadding
   
-  self.top = self:addShape(love.physics.newEdgeShape(p, p, w - p, p))
-  self.bottom = self:addShape(love.physics.newEdgeShape(p, h - p, w - p, h - p))
-  self.left = self:addShape(love.physics.newEdgeShape(p, p, p, h - p))
-  self.right = self:addShape(love.physics.newEdgeShape(w - p, p, w - p, h - p))
+  self.top = self:addShape(love.physics.newRectangleShape(w / 2, (vp - p) / 2, w + p * 2, p))
+  self.bottom = self:addShape(love.physics.newRectangleShape(w / 2, h + (p - vp) / 2, w + p * 2, p))
+  self.left = self:addShape(love.physics.newRectangleShape((vp - p) / 2, h / 2, p, h + p * 2))
+  self.right = self:addShape(love.physics.newRectangleShape(w + (p - vp) / 2, h / 2, p, h + p * 2))
   for _, v in pairs{"top", "bottom", "left", "right"} do self[v]:setCategory(16) end
 end
 
 function Barrier:draw()
-  if self.padding < 1 then return end
+  if self.visualPadding < 1 then return end
   local w = self.world.width
   local h = self.world.height
-  local p = self.padding
+  local p = self.visualPadding
   
   love.graphics.pushColor(self.color)
   love.graphics.rectangle("fill", 0, 0, w, p) -- top

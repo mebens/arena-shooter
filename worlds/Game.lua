@@ -14,6 +14,7 @@ function Game:initialize(width, height)
   Game.static.id = self
 
   self.maxSlowmo = 2
+  self.slowmoFactor = 0.25
   self.slowmoRecharge = 0.2
   self.slowmo = self.maxSlowmo
   self.slowmoActive = false
@@ -70,7 +71,7 @@ function Game:update(dt)
       
       if self.slowmo > 0 and input.pressed("slowmo") then
         if self.slowmoTween then self.slowmoTween:stop() end
-        self.slowmoTween = tween(self, 0.15, { deltaFactor = 0.25 })
+        self.slowmoTween = tween(self, 0.15, { deltaFactor = self.slowmoFactor })
         self.slowmoActive = true
         self.player:showSlowmo()
       end

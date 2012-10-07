@@ -1,13 +1,6 @@
 Player = class("Player", PhysicalEntity):include(ColorRotator)
 Player.static.maxLives = 3
 
-do
-  local aimWidth = 400
-  local aim = love.image.newImageData(aimWidth, 3)
-  aim:mapPixel(function(x, y) return 255, 255, 255, (y == 1 and 180 or 100) * (x / aimWidth) end)
-  Player.static.aimImage = love.graphics.newImage(aim)
-end
-
 function Player:initialize(x, y)
   PhysicalEntity.initialize(self, x, y, "dynamic")
   self.layer = 2
@@ -19,6 +12,7 @@ function Player:initialize(x, y)
   
   -- live/death system
   self.lives = Player.maxLives
+  self.invincible = false
   self.flashTime = 0.25
   self.flashCount = 5
   self.flashes = 0
@@ -103,7 +97,7 @@ function Player:draw()
 end
 
 function Player:collided(other, fixture, otherFixture, contact)
-  if other.class == Enemy then
+  if not self.invincible and other.class == Enemy then
     other:die()
     self.lives = self.lives - 1
     self.world:sendMessage("player.lifeLost")

@@ -2,6 +2,8 @@ require("ammo")
 require("ammo.physics")
 require("ammo.input")
 require("ammo.tweens")
+require("ammo.debug")
+require("ammo.debug.commands")
 require("lib.assets")
 
 require("misc.utils")
@@ -12,6 +14,7 @@ require("misc.GameCamera")
 
 require("modules.data")
 require("modules.blur")
+debug.include(require("modules.commands"))
 
 require("entities.Fade")
 require("entities.HUD")
@@ -37,6 +40,7 @@ require("worlds.MenuBackground")
 
 function love.load()
   data.init()
+  debug.init()
   assets.loadFont("quantico.ttf", { 16, 20, 32, 40, 64 }, "main")
   assets.loadImage("crosshair.png")
   love.mouse.setVisible(false)
@@ -64,11 +68,18 @@ end
 
 function love.update(dt)
   ammo.update(dt)
+  debug.update(dt)
   input.update()
 end
 
-function love.keypressed(key)
+function love.draw()
+  ammo.draw()
+  debug.draw()
+end
+
+function love.keypressed(key, code)
   input.keypressed(key)
+  debug.keypressed(key, code)
   
   -- backup quit key; I've also no clue why I need to use input.key instead of key here
   if input.key.down.lctrl and key == "q" then love.event.quit() end

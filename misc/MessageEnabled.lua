@@ -18,6 +18,7 @@ function MessageEnabled:removeListener(name, callback)
 end
 
 function MessageEnabled:sendMessage(name)
-  if not self._listeners[name] then error("No listeners for message '" .. name .. "'") end
-  for func, args in pairs(self._listeners[name]) do func(unpack(args)) end
+  if self._listeners[name] then
+    for func, args in pairs(self._listeners[name]) do func(unpack(args)) end
+  end
 end

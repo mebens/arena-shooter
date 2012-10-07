@@ -9,7 +9,6 @@ function HUD:initialize()
   Entity.initialize(self)
   self.layer = -1
   self.padding = 20
-  self.debug = false
   self.drawCursor = true
   self.over = false
   self.playColor = { 255, 255, 255, 255 }
@@ -79,7 +78,6 @@ function HUD:added()
 end
 
 function HUD:update(dt)
-  if input.pressed("debug") then self.debug = not self.debug end
   self.lifeParticles:update(dt)
 end
 
@@ -92,13 +90,9 @@ function HUD:draw()
     self.resetMsg:draw()
   end
   
-  if self.debug then
-    self.debugInfo.text = ("FPS: %s\nCount: %s\nMemory: %.2f MB"):format(love.timer.getFPS(), self.world.count, collectgarbage("count") / 1000)
-    self.debugInfo:draw()
-  end
-  
-  self.score.text = self.world.score
+  self.score.text = self.world.score.score
   self.score:draw()
+  
   self.lives.text:draw()
   love.graphics.pushColor(self.playColor)
   love.graphics.draw(self.lifeParticles)
@@ -133,7 +127,7 @@ end
 
 function HUD:gameOver()
   self.over = true
-  self.overScore.text = "Score: " .. self.world.score
+  self.overScore.text = "Score: " .. self.world.score.score
   self.overHighscore.text = "Highscore: " .. data.highscore
   tween(self.playColor, 1, { [4] = 0 })
   tween(self.overColor, 1, { [4] = 255 })

@@ -7,7 +7,6 @@ function Game:initialize(width, height)
   
   self.width = width or 1440
   self.height = height or 900
-  self.score = 0
   self.paused = false
   self.over = false
   self.deltaFactor = 1
@@ -20,6 +19,7 @@ function Game:initialize(width, height)
   self.slowmoActive = false
   
   self.camera = GameCamera:new()
+  self.score = ScoreTracker:new()
   self.fade = Fade:new(0.5, true)
   self.hud = HUD:new()
   self.player = Player:new(self.width / 2, self.height / 2)
@@ -36,6 +36,7 @@ function Game:initialize(width, height)
   }
   
   self:add(
+    self.score,
     self.fade,
     self.hud,
     Barrier:new(),
@@ -102,10 +103,6 @@ function Game:gameOver()
   self.hud.drawCursor = false
 end
 
-function Game:enemyKilled(enemy)
-  self.score = self.score + 1
-end
-
 function Game:resolutionChanged()
   self.camera:update()
   self.hud:adjustText()
@@ -132,6 +129,6 @@ end
 
 function Game:gameOverSlowmoStopped()
   self.canReset = true
-  data.score(self.score)
+  data.score(self.score.score)
   self.hud:gameOver()
 end

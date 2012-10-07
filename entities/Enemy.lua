@@ -45,6 +45,6 @@ function Enemy:die()
     end
   end
   
-  self.world:enemyKilled(self)
+  self.world:sendMessage("enemy.killed")
   self.world = nil
 end

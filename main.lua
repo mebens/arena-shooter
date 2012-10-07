@@ -16,6 +16,7 @@ require("modules.data")
 require("modules.blur")
 debug.include(require("modules.commands"))
 
+require("entities.ScoreTracker")
 require("entities.Fade")
 require("entities.HUD")
 require("entities.Barrier")

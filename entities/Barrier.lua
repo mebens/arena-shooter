@@ -5,7 +5,7 @@ function Barrier:initialize()
   self.layer = 1
   self.visualPadding = 5
   self.shapePadding = 20
-  self.color = { 240, 240, 240, 220 }
+  self.color = { 240, 240, 240, 240 }
 end
 
 function Barrier:added()
@@ -39,9 +39,9 @@ function Barrier:draw()
 end
 
 function Barrier:alphaDown()
-  tween(self.color, 1, { [4] = 150 }, nil, self.alphaUp, self)
+  tween(self.color, 1, { [4] = 180 }, nil, self.alphaUp, self)
 end
 
 function Barrier:alphaUp()
-  tween(self.color, 1, { [4] = 220 }, nil, self.alphaDown, self)
+  tween(self.color, 1, { [4] = 240 }, nil, self.alphaDown, self)
 end

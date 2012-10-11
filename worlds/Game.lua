@@ -26,9 +26,10 @@ function Game:initialize(width, height)
   local padding = 40
   
   self:setupLayers{
-    [-2] = 0, -- fade
-    [-1] = 0, -- hud
-    [1] = 1, -- barrier
+    [-2] = { 0, post = blur.include }, -- fade
+    [-1] = 0, -- HUD
+    [0] = 1, -- in-world HUD
+    [1] = { 1, pre = blur.exclude }, -- barrier
     [2] = 1, -- player
     [3] = 1, -- enemy
     [4] = 1, -- missile

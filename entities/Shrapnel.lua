@@ -41,7 +41,7 @@ function Shrapnel:draw()
 end
 
 function Shrapnel:collided(other, fixture, otherFixture, contact)
-  if other.class == Enemy and self:checkVelocity() then
+  if instanceOf(Enemy, other) and self:checkVelocity() then
     other:die()
     self:die()
     self.tween:stop()

@@ -2,7 +2,7 @@ HUD = class("HUD", Entity)
 HUD.static.lifeImageWidth = 18
 HUD.static.lifeImageHeight = 20
 HUD.static.lifeImage = makeRectImage(HUD.lifeImageWidth, HUD.lifeImageHeight, 255, 255, 255, 230)
-HUD.static.lostLifeImage = makeRectImage(HUD.lifeImageWidth, HUD.lifeImageHeight, 255, 255, 255, 80)
+HUD.static.lostLifeImage = makeRectImage(HUD.lifeImageWidth, HUD.lifeImageHeight, 255, 255, 255, 150)
 HUD.static.lostLifeParticle = makeRectImage(6, 6, 255, 255, 255, 230)
 
 function HUD:initialize()
@@ -27,7 +27,7 @@ function HUD:initialize()
     spacing = 8,
     text = Text:new{"Lives", x = self.padding, align = "center", font = assets.fonts.main[16], color = self.playColor}
   }
-  
+    
   self.overMsg = Text:new{
     "GAME OVER",
     x = self.padding,
@@ -57,10 +57,9 @@ function HUD:initialize()
     font = assets.fonts.main[16],
     color = self.overColor
   }
-  
-  self:adjustText()
-  self.debugInfo = Text:new{x = self.padding, y = self.padding, font = assets.fonts.main[16]}
-  
+    
+  self.allText = { self.score, self.overMsg, self.overScore, self.overHighscore, self.resetMsg, self.lives.text }
+    
   local ps = love.graphics.newParticleSystem(HUD.lostLifeParticle, 20)
   ps:setLifetime(0.05)
   ps:setEmissionRate(1000)
@@ -70,7 +69,9 @@ function HUD:initialize()
   ps:setRotation(0, math.tau)
   ps:setSpeed(40, 80)
   ps:stop()
+  
   self.lifeParticles = ps
+  self:adjustText()
 end
 
 function HUD:added()
@@ -79,6 +80,7 @@ end
 
 function HUD:update(dt)
   self.lifeParticles:update(dt)
+  self.score.text = self.world.score.score
 end
 
 function HUD:draw()
@@ -90,10 +92,9 @@ function HUD:draw()
     self.resetMsg:draw()
   end
   
-  self.score.text = self.world.score.score
   self.score:draw()
-  
   self.lives.text:draw()
+  
   love.graphics.pushColor(self.playColor)
   love.graphics.draw(self.lifeParticles)
   
@@ -114,7 +115,7 @@ function HUD:adjustText()
   self.lives.y = self.lives.text.y - HUD.lifeImageHeight - 5
   
   -- width
-  for _, v in pairs{self.score, self.overMsg, self.overScore, self.overHighscore, self.resetMsg, self.lives.text} do
+  for _, v in pairs(self.allText) do
     v.width = love.graphics.width - self.padding * 2
   end
   

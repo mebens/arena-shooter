@@ -2,6 +2,7 @@ Enemy = class("Enemy", PhysicalEntity)
 Enemy.static.width = 30
 Enemy.static.height = 30
 Enemy.static.moveForce = 100
+Enemy.static.scaleTime = 0.3
 Enemy.static.image = makeRectImage(Enemy.width, Enemy.height)
 
 function Enemy:initialize(x, y, color)
@@ -17,7 +18,7 @@ end
 function Enemy:added()
   self:setupBody()
   self:addShape(love.physics.newRectangleShape(self.width, self.height))
-  self:animate(0.3, { scale = 1 })
+  self:animate(Enemy.scaleTime, { scale = 1 })
 end
 
 function Enemy:update(dt)

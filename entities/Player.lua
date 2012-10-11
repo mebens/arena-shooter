@@ -97,7 +97,7 @@ function Player:draw()
 end
 
 function Player:collided(other, fixture, otherFixture, contact)
-  if not self.invincible and other.class == Enemy then
+  if not self.invincible and instanceOf(Enemy, other) then
     other:die()
     self.lives = self.lives - 1
     self.world:sendMessage("player.lifeLost")

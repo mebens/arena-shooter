@@ -24,6 +24,7 @@ require("entities.Player")
 require("entities.Enemy")
 require("entities.EnemySpawner")
 require("entities.EnemyChunk")
+require("entities.ChargerEnemy")
 require("entities.Missile")
 require("entities.MissileSpawner")
 require("entities.Shrapnel")
@@ -48,6 +49,7 @@ function love.load()
   
   key = input.key
   mouse = input.mouse
+  log = debug.log
   ammo.world = MainMenu:new()
   
   -- player controls

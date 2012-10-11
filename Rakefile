@@ -7,5 +7,5 @@ task :lines do
 end
 
 task :package do
-  puts `zip -r arena-concept.love ammo assets entities misc modules lib worlds *.lua`
+  puts `zip -r --exclude=*.git* --exclude=*.DS_Store* arena-concept.love ammo assets entities misc modules lib worlds *.lua`
 end

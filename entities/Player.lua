@@ -6,6 +6,8 @@ function Player:initialize(x, y)
   self.layer = 2
   self.width = 50
   self.height = 50
+  self.scale = 1
+  
   self.moveForce = 3500
   self.missileTime = 0.5
   self.missileTimer = self.missileTime
@@ -16,7 +18,7 @@ function Player:initialize(x, y)
   self.flashTime = 0.25
   self.flashCount = 5
   self.flashes = 0
-    
+  
   -- ui/visuals
   self.uiPos = Vector:new(x, y)
   self.uiSpeed = 25
@@ -59,6 +61,7 @@ function Player:update(dt)
   elseif input.pressed("fire") then
     self.world:add(Missile:new(self.x, self.y, self.angle, self.color))
     self.missileTimer = 0
+    self:animate(0.05, { scale = 0.8 }, nil, self.animate, self, 0.3, { scale = 1 })
   end
   
   if self.world.slowmo >= self.world.maxSlowmo then

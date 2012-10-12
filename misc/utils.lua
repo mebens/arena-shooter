@@ -76,8 +76,8 @@ function Entity:drawImage(image, x, y)
     x or self.x,
     y or self.y,
     self.angle,
-    self.scale or 1,
-    self.scale or 1,
+    self.scaleX or self.scale or 1,
+    self.scaleY or self.scale or 1,
     image:getWidth() / 2,
     image:getHeight() / 2
   )

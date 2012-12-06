@@ -7,11 +7,7 @@ function data.init()
     local t = loadstring(love.filesystem.read(data.filename))()
     for k, v in pairs(t) do data[k] = v end
   else
-    data.resolution = 3
-    data.fullscreen = false
-    data.vsync = true
-    data.blur = true
-    data.mouseGrab = false
+    data.resetOptions()
     data.highscore = 0
   end
   
@@ -27,6 +23,7 @@ function data.apply()
     love.graphics.setMode(width, height, data.fullscreen, data.vsync)
     data.safeResolution = data.resolution
     data.safeFullscreen = data.fullscreen
+    postfx.updateResolution()
     if Game.id then Game.id:resolutionChanged() end
   else
     -- revert to something that works if we can
@@ -34,14 +31,10 @@ function data.apply()
     if data.safeFullscreen then data.fullscreen = data.safeFullscreen end
     print("DISPLAY MODE NOT SUPPORTED")
   end
-  
-  if love.graphics.isSupported("canvas") then
-    blur.init()
-    blur.active = data.blur
-  else
-    blur.active = false
-  end
-  
+    
+  blur.active = postfx.supported and data.blur or false
+  bloom.active = (postfx.supported and postfx.effectsSupported) and data.bloom or false
+  print(bloom.active, data.bloom)
   love.mouse.setGrab(data.mouseGrab)
 end
 
@@ -55,6 +48,15 @@ function data.save()
   end
   
   love.filesystem.write(data.filename, str .. "}")
+end
+
+function data.resetOptions()
+  data.resolution = 3
+  data.fullscreen = false
+  data.vsync = true
+  data.blur = true
+  data.bloom = true
+  data.mouseGrab = false
 end
 
 function data.score(score)

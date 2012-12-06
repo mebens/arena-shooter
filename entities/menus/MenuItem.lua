@@ -7,7 +7,7 @@ function MenuItem:initialize(title, callback, callbackSelf, key)
   self.callbackSelf = callbackSelf
   self.key = key
   self.activated = false
-  self.text = Text:new{title, font = assets.fonts.main[40], color = { 255, 255, 255, 180 }}
+  self.text = Text:new{title, font = assets.fonts.main[32], color = { 255, 255, 255, 180 }}
   self.width = self.text.fontWidth
   self.height = self.text.fontHeight
 end

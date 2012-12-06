@@ -10,6 +10,7 @@ function Enemy:initialize(x, y, color)
   self.layer = 3
   self.width = Enemy.width
   self.height = Enemy.height
+  self.speed = Enemy.moveForce
   self.image = Enemy.image
   self.color = table.copy(color)
   self.scale = 0
@@ -26,7 +27,7 @@ function Enemy:update(dt)
   self.angle = math.angle(self.x, self.y, self.world.player.x, self.world.player.y)
   
   if self.scale == 1 then
-    self:applyForce(math.cos(self.angle) * Enemy.moveForce, math.sin(self.angle) * Enemy.moveForce)
+    self:applyForce(math.cos(self.angle) * self.speed, math.sin(self.angle) * self.speed)
   end
 end
 
@@ -45,7 +46,8 @@ function Enemy:die()
       break
     end
   end
-  
+
+  --Shrapnel:explosion(self.x, self.y, math.random(20, 30), self.color, self.world)  
   self.world:sendMessage("enemy.killed")
   self.world = nil
 end

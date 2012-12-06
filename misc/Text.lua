@@ -39,9 +39,10 @@ end
 function Text:draw(x, y)
   local prevFont = love.graphics.getFont()
   if self._font then love.graphics.setFont(self._font) end
-  love.graphics.pushColor(self.color)
+  love.graphics.storeColor()
+  love.graphics.setColor(self.color)
   love.graphics.printf(self._text, x or self.x, y or self.y, self.width, self.align)
-  love.graphics.popColor()
+  love.graphics.resetColor()
   if prevFont then love.graphics.setFont(prevFont) end
 end
 

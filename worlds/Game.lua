@@ -26,14 +26,14 @@ function Game:initialize(width, height)
   local padding = 40
   
   self:setupLayers{
-    [-2] = { 0, post = blur.include }, -- fade
+    [-2] = { 0, post = postfx.include }, -- fade
     [-1] = 0, -- HUD
-    [0] = 1, -- in-world HUD
-    [1] = { 1, pre = blur.exclude }, -- barrier
+    [0] = { 1, pre = postfx.exclude }, -- in-world HUD
+    [1] = 1, -- barrier
     [2] = 1, -- player
     [3] = 1, -- enemy
     [4] = 1, -- missile
-    [5] = 1 -- particles
+    [5] = 1, -- particles
   }
   
   self:add(
@@ -89,12 +89,9 @@ function Game:update(dt)
 end
 
 function Game:draw()
-  if not self.paused or not blur.active then
-    blur.start()
-    PhysicalWorld.draw(self)
-  end
-  
-  blur.stop()
+  postfx.start()
+  PhysicalWorld.draw(self)
+  postfx.stop()
 end
 
 function Game:gameOver()

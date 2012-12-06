@@ -95,7 +95,7 @@ function HUD:draw()
   self.score:draw()
   self.lives.text:draw()
   
-  love.graphics.pushColor(self.playColor)
+  love.graphics.setColor(self.playColor)
   love.graphics.draw(self.lifeParticles)
   
   for i = 0, Player.maxLives - 1 do
@@ -103,8 +103,9 @@ function HUD:draw()
     love.graphics.draw(i > self.world.player.lives - 1 and HUD.lostLifeImage or HUD.lifeImage, x, self.lives.y)
   end
   
-  love.graphics.popColor()
-  if self.drawCursor then self:drawImage(assets.images.crosshair, love.mouse.getRawX(), love.mouse.getRawY()) end
+  if self.drawCursor and not self.world.paused then
+    self:drawImage(assets.images.crosshair, love.mouse.getRawPosition())
+  end
 end
 
 -- contains stuff dependent on resolution

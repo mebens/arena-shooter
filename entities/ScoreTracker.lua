@@ -29,7 +29,7 @@ function ScoreTracker:update(dt)
 end
 
 function ScoreTracker:draw()
-  for text in self.additionText:getIterator() do text:draw() end
+  for text in self.additionText:iterate() do text:draw() end
 end
 
 function ScoreTracker:addText(score)

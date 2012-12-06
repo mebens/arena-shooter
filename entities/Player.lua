@@ -1,4 +1,6 @@
-Player = class("Player", PhysicalEntity):include(ColorRotator)
+Player = class("Player", PhysicalEntity)
+Player:include(ColorRotator)
+Player:include(Timers)
 Player.static.maxLives = 3
 
 function Player:initialize(x, y)
@@ -7,10 +9,8 @@ function Player:initialize(x, y)
   self.width = 50
   self.height = 50
   self.scale = 1
-  
   self.moveForce = 3500
-  self.missileTime = 0.5
-  self.missileTimer = self.missileTime
+  self:addTimer("missile", 0.5)
   
   -- live/death system
   self.lives = Player.maxLives
@@ -47,6 +47,7 @@ end
 
 function Player:update(dt)
   PhysicalEntity.update(self, dt)
+  self:updateTimers(dt)
   self:applyForce(input.axisDown("left", "right") * self.moveForce, input.axisDown("up", "down") * self.moveForce)
   self.angle = math.angle(self.x, self.y, mouse.x, mouse.y)
   
@@ -56,12 +57,10 @@ function Player:update(dt)
     self.uiPos[axis] = val + (self[axis] - val) * self.uiSpeed * dt
   end
   
-  if self.missileTimer < self.missileTime then
-    self.missileTimer = self.missileTimer + dt
-  elseif input.pressed("fire") then
+  if self.missileTimer <= 0 and input.pressed("fire") then
     self.world:add(Missile:new(self.x, self.y, self.angle, self.color))
-    self.missileTimer = 0
     self:animate(0.05, { scale = 0.8 }, nil, self.animate, self, 0.3, { scale = 1 })
+    self:resetTimer("missile")
   end
   
   if self.world.slowmo >= self.world.maxSlowmo then
@@ -78,24 +77,21 @@ end
 
 function Player:draw()
   local missileRadius = 1.25
-  love.graphics.pushColor(self.color)
-  --love.graphics.draw(Player.aimImage, self.x, self.y, self.angle - math.tau / 2, 1, 1, Player.aimImage:getWidth(), Player.aimImage:getHeight() / 2)
-  love.graphics.popColor()
 
   if self.slowmoColor[4] > 0 then
     missileRadius = 1.05
-    love.graphics.pushColor(self.slowmoColor)
+    love.graphics.setColor(self.slowmoColor)
     love.graphics.setLineWidth(6)
     drawArc(self.uiPos.x, self.uiPos.y, self.width / 1.2, 0, math.tau * (self.world.slowmo / self.world.maxSlowmo), 30)
-    love.graphics.setLineWidth(1)
-    love.graphics.popColor()
   end
   
   if self.missileTimer < self.missileTime then
+    love.graphics.setColor(255, 255, 255)
     love.graphics.setLineWidth(3)
     drawArc(self.uiPos.x, self.uiPos.y, self.width / missileRadius, 0, math.tau * (self.missileTimer / self.missileTime), 30)
   end
-    
+  
+  love.graphics.setLineWidth(1)    
   self:drawImage()
 end
 

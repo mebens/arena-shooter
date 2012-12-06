@@ -4,7 +4,7 @@ function Barrier:initialize()
   PhysicalEntity.initialize(self)
   self.layer = 1
   self.visualPadding = 5
-  self.shapePadding = 20
+  self.shapePadding = 50
   self.color = { 240, 240, 240, 240 }
 end
 
@@ -30,12 +30,11 @@ function Barrier:draw()
   local h = self.world.height
   local p = self.visualPadding
   
-  love.graphics.pushColor(self.color)
+  love.graphics.setColor(self.color)
   love.graphics.rectangle("fill", 0, 0, w, p) -- top
   love.graphics.rectangle("fill", 0, h - p, w, p) -- bottom
   love.graphics.rectangle("fill", 0, p, p, h - p * 2) -- left
   love.graphics.rectangle("fill", w - p, p, p, h - p * 2) -- right
-  love.graphics.popColor()
 end
 
 function Barrier:alphaDown()

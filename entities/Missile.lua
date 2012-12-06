@@ -18,6 +18,7 @@ function Missile:initialize(x, y, angle, color)
   self.vely = Missile.speed * math.sin(angle)
   self.image = Missile.image
   self.color = table.copy(color)
+  self.color[4] = 255
   
   -- particle system
   local r = self.color[1]
@@ -38,7 +39,7 @@ end
 
 function Missile:added()
   self:setupBody()
-  self.fixture = self:addShape(love.physics.newRectangleShape(Missile.width, Missile.height))
+  self.fixture = self:addShape(love.physics.newRectangleShape(self.width, self.height))
   self.fixture:setMask(2)
   self.fixture:setSensor(true)
 end

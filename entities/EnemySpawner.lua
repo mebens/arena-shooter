@@ -8,7 +8,7 @@ EnemySpawner.static.colors = {
 function EnemySpawner:initialize(x, y)
   Entity.initialize(self, x, y)
   self.visible = false
-  self.baseRate = 2.5
+  self.baseRate = 2
   self.timer = 0
 end
 

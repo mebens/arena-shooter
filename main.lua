@@ -3,16 +3,21 @@ require("ammo.physics")
 require("ammo.input")
 require("ammo.tweens")
 require("ammo.debug")
+require("ammo.debug.live")
 require("ammo.debug.commands")
-require("lib.assets")
+require("ammo.assets")
+require("lib.carpenter.carpenter")
 
 require("misc.utils")
 require("misc.Text")
 require("misc.MessageEnabled")
 require("misc.ColorRotator")
+require("misc.Timers")
 require("misc.GameCamera")
 
 require("modules.data")
+require("modules.postfx")
+require("modules.bloom")
 require("modules.blur")
 debug.include(require("modules.commands"))
 
@@ -26,8 +31,8 @@ require("entities.EnemySpawner")
 require("entities.EnemyChunk")
 require("entities.ChargerEnemy")
 require("entities.Missile")
-require("entities.MissileSpawner")
 require("entities.Shrapnel")
+require("entities.MissileSpawner")
 
 require("entities.menus.MenuItem")
 require("entities.menus.SelectionItem")
@@ -41,14 +46,24 @@ require("worlds.PauseMenu")
 require("worlds.MenuBackground")
 
 function love.load()
-  data.init()
-  debug.init()
+  -- assets
   assets.loadFont("quantico.ttf", { 16, 20, 32, 40, 64 }, "main")
   assets.loadImage("crosshair.png")
-  love.mouse.setVisible(false)
+  assets.loadEffect("bloom.frag")
   
-  key = input.key
-  mouse = input.mouse
+  -- init functions
+  postfx.init()
+  data.init()
+  debug.init()
+  blur.init()
+  bloom.init()
+  
+  -- postfx
+  postfx.add(blur)
+  postfx.add(bloom)
+  
+  -- misc
+  love.mouse.setVisible(false)  
   log = debug.log
   ammo.world = MainMenu:new()
   
@@ -58,6 +73,7 @@ function love.load()
   input.define("up", "w", "up")
   input.define("down", "s", "down")
   input.define{"fire", mouse = "l"}
+  input.define{"missile", mouse = "r"}
   
   -- world controls
   input.define("slowmo", " ")
@@ -80,10 +96,10 @@ function love.draw()
   debug.draw()
 end
 
-function love.keypressed(key, code)
-  input.keypressed(key)
-  debug.keypressed(key, code)
+function love.keypressed(k, code)
+  input.keypressed(k)
+  debug.keypressed(k, code)
   
-  -- backup quit key; I've also no clue why I need to use input.key instead of key here
-  if input.key.down.lctrl and key == "q" then love.event.quit() end
+  -- backup quit key  
+  if key.down.lctrl and k == "q" then love.event.quit() end
 end

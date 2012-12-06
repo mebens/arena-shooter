@@ -9,6 +9,7 @@ function MenuBackground:initialize()
   self.bottom = MissileSpawner:new(0, self.height - self.padding, math.tau * 0.75)
   self:add(self.left, self.right, self.top, self.bottom)
   self.camera:update()
+  self.score.visible = false
 end
 
 function MenuBackground:start()

@@ -47,7 +47,6 @@ require("worlds.PauseMenu")
 require("worlds.MenuBackground")
 
 function love.load()
-  ammo.world = nil
   -- assets
   assets.loadFont("quantico.ttf", { 16, 20, 32, 40, 64 }, "main")
   assets.loadImage("crosshair.png")

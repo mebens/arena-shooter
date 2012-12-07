@@ -1,6 +1,21 @@
-[submodule "ammo"]
-  path = ammo
+[submodule "lib/ammo"]
+  path = lib/ammo
   url = git://github.com/BlackBulletIV/ammo.git
 [submodule "lib/carpenter"]
   path = lib/carpenter
   url = git://github.com/BlackBulletIV/carpenter.git
+[submodule "lib/assets"]
+  path = lib/assets
+  url = git://github.com/BlackBulletIV/ammo-assets.git
+[submodule "lib/debug"]
+  path = lib/debug
+  url = git://github.com/BlackBulletIV/ammo-debug.git
+[submodule "lib/input"]
+  path = lib/input
+  url = git://github.com/BlackBulletIV/ammo-input.git
+[submodule "lib/physics"]
+  path = lib/physics
+  url = git://github.com/BlackBulletIV/ammo-physics.git
+[submodule "lib/tweens"]
+  path = lib/tweens
+  url = git://github.com/BlackBulletIV/ammo-tweens.git

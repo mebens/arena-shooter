@@ -30,6 +30,9 @@ function postfx.add(effect)
   end
   
   postfx.all[#postfx.all + 1] = effect
+  if not effect.draw then effect.draw = PixelEffect.draw end
+  if effect.init then effect:init() end
+  return effect
 end
 
 function postfx.list(t)
@@ -50,13 +53,23 @@ function postfx.stop()
   
   for _, v in ipairs(postfx.all) do
     if v.active then
+      love.graphics.storeColor()
       canvas = v:draw(canvas, postfx.alternate) or postfx.canvas
+      love.graphics.resetColor()
     end
   end
   
   love.graphics.setCanvas()
   love.graphics.draw(canvas, 0, 0)
   love.graphics.draw(postfx.exclusion, 0, 0)
+end
+
+function postfx.update(dt)
+  if not postfx.active then return end
+  
+  for _, v in ipairs(postfx.all) do
+    if v.active and v.update then v:update(dt) end
+  end
 end
 
 function postfx.include()

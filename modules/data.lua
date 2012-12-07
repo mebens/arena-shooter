@@ -34,7 +34,6 @@ function data.apply()
     
   blur.active = postfx.supported and data.blur or false
   bloom.active = (postfx.supported and postfx.effectsSupported) and data.bloom or false
-  print(bloom.active, data.bloom)
   love.mouse.setGrab(data.mouseGrab)
 end
 

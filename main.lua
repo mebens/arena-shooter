@@ -17,9 +17,10 @@ require("misc.GameCamera")
 
 require("modules.data")
 require("modules.postfx")
-require("modules.bloom")
-require("modules.blur")
 debug.include(require("modules.commands"))
+require("modules.effects.bloom")
+require("modules.effects.blur")
+require("modules.effects.noise")
 
 require("entities.ScoreTracker")
 require("entities.Fade")
@@ -46,21 +47,22 @@ require("worlds.PauseMenu")
 require("worlds.MenuBackground")
 
 function love.load()
+  ammo.world = nil
   -- assets
   assets.loadFont("quantico.ttf", { 16, 20, 32, 40, 64 }, "main")
   assets.loadImage("crosshair.png")
   assets.loadEffect("bloom.frag")
+  assets.loadEffect("noise.frag")
   
   -- init functions
   postfx.init()
   data.init()
   debug.init()
-  blur.init()
-  bloom.init()
   
   -- postfx
   postfx.add(blur)
   postfx.add(bloom)
+  postfx.add(noise)
   
   -- misc
   love.mouse.setVisible(false)  
@@ -86,6 +88,7 @@ function love.load()
 end
 
 function love.update(dt)
+  postfx.update(dt)
   ammo.update(dt)
   debug.update(dt)
   input.update()

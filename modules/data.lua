@@ -1,6 +1,18 @@
 data = {}
 data.filename = "data"
-data.resolutions = { "800x600", "1024x768", "1280x720", "1280x768", "1440x900", "1680x1050", "1680x1200", "1920x1080", "1920x1200", "2560x1440", "2560x1600" }
+data.resolutions = {
+  "800x600",
+  "1024x768",
+  "1280x720",
+  "1280x768",
+  "1440x900",
+  "1680x1050",
+  "1680x1200",
+  "1920x1080",
+  "1920x1200",
+  "2560x1440",
+  "2560x1600"
+}
 
 function data.init()
   if love.filesystem.exists(data.filename) then

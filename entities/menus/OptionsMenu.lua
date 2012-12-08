@@ -37,6 +37,12 @@ function OptionsMenu:resetItems()
   if self.bloom then self.bloom:set(data.bloom) end
 end
 
+function OptionsMenu:flashRed(item)
+  tween(item.text.color, 0.3, { 255, 0, 0 }, nil, function()
+    tween(item.text.color, 0.3, { 255, 255, 255 })
+  end)
+end
+
 function OptionsMenu:setResolution(value, index)
   data.resolution = index
 end
@@ -62,9 +68,13 @@ function OptionsMenu:setMouseGrab(value)
 end
 
 function OptionsMenu:apply()
-  data.apply()
+  if not data.apply() then
+    self:flashRed(self.resolution)
+    self:flashRed(self.fullscreen)
+    self:resetItems()
+  end
+  
   data.save()
-  self:resetItems() -- in case data.apply had to revert the resolution to something safe
 end
 
 function OptionsMenu:reset()

@@ -15,6 +15,10 @@ function data.init()
 end
 
 function data.apply()
+  love.mouse.setGrab(data.mouseGrab)
+  blur.active = postfx.supported and data.blur or false
+  bloom.active = (postfx.supported and postfx.effectsSupported) and data.bloom or false
+  
   local width, height = data.resolutions[data.resolution]:match("(%d+)x(%d+)")
   width = tonumber(width)
   height = tonumber(height)
@@ -25,16 +29,17 @@ function data.apply()
     data.safeFullscreen = data.fullscreen
     postfx.updateResolution()
     if Game.id then Game.id:resolutionChanged() end
+    return true
   else
+    print("Display mode not supported:")
+    print(data.resolutions[data.resolution])
+    print("Fullscreen: " .. tostring(data.fullscreen))
+    
     -- revert to something that works if we can
     if data.safeResolution then data.resolution = data.safeResolution end
-    if data.safeFullscreen then data.fullscreen = data.safeFullscreen end
-    print("DISPLAY MODE NOT SUPPORTED")
+    if data.safeFullscreen ~= nil then data.fullscreen = data.safeFullscreen end
+    return false
   end
-    
-  blur.active = postfx.supported and data.blur or false
-  bloom.active = (postfx.supported and postfx.effectsSupported) and data.bloom or false
-  love.mouse.setGrab(data.mouseGrab)
 end
 
 function data.save()

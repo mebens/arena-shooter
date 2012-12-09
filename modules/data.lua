@@ -15,12 +15,12 @@ data.resolutions = {
 }
 
 function data.init()
+  data.resetOptions()
+  data.highscore = 0
+  
   if love.filesystem.exists(data.filename) then
     local t = loadstring(love.filesystem.read(data.filename))()
     for k, v in pairs(t) do data[k] = v end
-  else
-    data.resetOptions()
-    data.highscore = 0
   end
   
   data.apply()
@@ -29,7 +29,8 @@ end
 function data.apply()
   love.mouse.setGrab(data.mouseGrab)
   blur.active = postfx.supported and data.blur or false
-  bloom.active = (postfx.supported and postfx.effectsSupported) and data.bloom or false
+  bloom.active = postfx.effectsSupported and data.bloom or false
+  noise.active = postfx.effectsSupported and data.noise or false
   
   local width, height = data.resolutions[data.resolution]:match("(%d+)x(%d+)")
   width = tonumber(width)
@@ -72,6 +73,7 @@ function data.resetOptions()
   data.vsync = true
   data.blur = true
   data.bloom = true
+  data.noise = true
   data.mouseGrab = false
 end
 

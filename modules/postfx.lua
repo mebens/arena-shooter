@@ -19,7 +19,7 @@ end
 
 function postfx.init()
   postfx.supported = love.graphics.isSupported("canvas")
-  postfx.effectsSupported = love.graphics.isSupported("pixeleffect")
+  postfx.effectsSupported = postfx.supported and love.graphics.isSupported("pixeleffect")
   postfx.active = postfx.supported
   if postfx.supported then postfx.updateResolution() end
 end

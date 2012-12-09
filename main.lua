@@ -87,7 +87,6 @@ function love.load()
 end
 
 function love.update(dt)
-  postfx.update(dt)
   ammo.update(dt)
   debug.update(dt)
   input.update()

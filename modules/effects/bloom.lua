@@ -3,7 +3,7 @@ bloom = {}
 function bloom:init()
   self.active = true
   self.effect = assets.effects.bloom
-  self.supported = postfx.supported and postfx.effectsSupported
+  self.supported = postfx.effectsSupported
   self.active = self.supported
   if self.supported then self:updateResolution() end
 end

@@ -84,6 +84,7 @@ function Game:update(dt)
   
   dt = dt * self.deltaFactor
   _G.dt = dt
+  postfx.update(dt)
   PhysicalWorld.update(self, dt)
   if key.pressed.k then self.player:die() end
 end

@@ -16,6 +16,11 @@ function OptionsMenu:initialize(inX, outX, y, out, parent)
     self:add(self.blur)
   end
   
+  if noise.supported then
+    self.noise = ToggleItem:new("Noise", self.setNoise, self, data.noise)
+    self:add(self.noise)
+  end
+  
   if bloom.supported then
     self.bloom = ToggleItem:new("Bloom", self.setBloom, self, data.bloom)
     self:add(self.bloom)
@@ -57,6 +62,10 @@ end
 
 function OptionsMenu:setBlur(value)
   data.blur = value
+end
+
+function OptionsMenu:setNoise(value)
+  data.noise = value
 end
 
 function OptionsMenu:setBloom(value)

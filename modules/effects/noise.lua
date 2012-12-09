@@ -2,6 +2,7 @@ noise = {}
 
 function noise:init()
   self.active = true
+  self.supported = postfx.effectsSupported
   self.timer = 0
   self.time = 0.04
   self.effect = assets.effects.noise

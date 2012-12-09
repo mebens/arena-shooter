@@ -1,5 +1,5 @@
 extern vec2 factor = vec2(1);
-extern float clamp = 0.85;
+extern float clamp = 0.875;
 
 // from http://www.ozone3d.net/blogs/lab/20110427/glsl-random-generator/
 float rand(vec2 n)

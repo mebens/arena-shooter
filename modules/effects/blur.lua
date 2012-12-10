@@ -1,11 +1,10 @@
 blur = {}
+blur.active = true
 
 function blur:init()
+  self.supported = postfx.supported
   self.alphaMultipler = 15
   self.minAlpha = 1
-  self.active = true
-  self.supported = postfx.supported
-  self.active = self.supported
   if self.supported then self:updateResolution() end
 end
 

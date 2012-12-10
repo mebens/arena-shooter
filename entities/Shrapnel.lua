@@ -26,6 +26,7 @@ end
 function Shrapnel:added()
   self:setupBody()
   self:setLinearDamping(2.5)
+  self:setInertia(10)
   self.tween = tween(self.color, "0.4:0.6", { [4] = 0 }, nil, self.die, self)
   
   self.fixture = self:addShape(love.physics.newRectangleShape(self.width, self.height))

@@ -46,8 +46,7 @@ function Enemy:die()
       break
     end
   end
-
-  --Shrapnel:explosion(self.x, self.y, math.random(20, 30), self.color, self.world)  
+  
   self.world:sendMessage("enemy.killed")
   self.world = nil
 end

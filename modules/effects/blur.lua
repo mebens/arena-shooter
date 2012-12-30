@@ -11,7 +11,7 @@ end
 function blur:draw(canvas)
   love.graphics.setCanvas(self.canvas)
   love.graphics.storeColor()
-  love.graphics.setColor(0, 0, 0, math.clamp(dt * 255 * self.alphaMultipler, self.minAlpha, 255))
+  love.graphics.setColor(0, 0, 0, math.clamp(love.timer.getDelta() * 255 * self.alphaMultipler, self.minAlpha, 255))
   love.graphics.rectangle("fill", 0, 0, love.graphics.width, love.graphics.height)
   love.graphics.resetColor()
   love.graphics.draw(canvas, 0, 0)

@@ -20,6 +20,35 @@ function drawArc(x, y, r, angle1, angle2, segments)
   end  
 end
 
+-- currently unused, but I'll keep it for now
+function makeFadedRect(width, height, divider, r, g, b, a)
+  local data = love.image.newImageData(width, height)
+  r = r or 255
+  g = g or 255
+  b = b or 255
+  a = a or 255
+  
+  data:mapPixel(function(x, y, r, g, b, a)
+    local factor = 1
+    
+    if x <= bw / div then
+      factor = x / (bw / div)
+    elseif x >= bw - bw / div then
+      factor = (bw - x) / (bw / div)
+    end
+    
+    if y <= bh / div then
+      factor = y / (bh / div)
+    elseif y >= bh - bh / div then
+      factor = (bh - y) / (bh / div)
+    end
+    
+    return r * factor, g * factor, b * factor, a
+  end)
+  
+  return love.graphics.newImage(data)
+end
+
 function drawBlackBg(alpha)
   love.graphics.storeColor()
   love.graphics.setColor(0, 0, 0, alpha)

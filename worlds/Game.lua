@@ -23,18 +23,23 @@ function Game:initialize(width, height)
   self.fade = Fade:new(0.5, true)
   self.hud = HUD:new()
   self.player = Player:new(self.width / 2, self.height / 2)
-  local padding = 40
+  self.background = Background:new()
   
   self:setupLayers{
-    [-2] = { 0, post = postfx.include }, -- fade
+    postfx.include,
+    [-2] = 0, -- fade
     [-1] = 0, -- HUD
-    [0] = { 1, pre = postfx.exclude }, -- in-world HUD
+    [0] = 1, -- in-world HUD
+    postfx.exclude,
     [1] = 1, -- barrier
     [2] = 1, -- player
     [3] = 1, -- enemy
     [4] = 1, -- missile
     [5] = 1, -- particles
+    [6] = 1 -- background
   }
+  
+  local padding = 40
   
   self:add(
     self.score,
@@ -42,6 +47,7 @@ function Game:initialize(width, height)
     self.hud,
     Barrier:new(),
     self.player,
+    self.background,
     EnemySpawner:new(padding, padding),
     EnemySpawner:new(self.width - padding, padding),
     EnemySpawner:new(padding, self.height - padding),
@@ -105,6 +111,7 @@ end
 function Game:resolutionChanged()
   self.camera:update()
   self.hud:adjustText()
+  self.background:resize()
 end
 
 function Game:pause()

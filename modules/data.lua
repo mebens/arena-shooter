@@ -29,8 +29,8 @@ end
 function data.apply()
   love.mouse.setGrab(data.mouseGrab)
   blur.active = postfx.supported and data.blur or false
-  bloom.active = postfx.effectsSupported and data.bloom or false
-  noise.active = postfx.effectsSupported and data.noise or false
+  bloom.active = postfx.fxSupported and data.bloom or false
+  noise.active = postfx.fxSupported and data.noise or false
   
   local width, height = data.resolutions[data.resolution]:match("(%d+)x(%d+)")
   width = tonumber(width)
@@ -40,7 +40,7 @@ function data.apply()
     love.graphics.setMode(width, height, data.fullscreen, data.vsync)
     data.safeResolution = data.resolution
     data.safeFullscreen = data.fullscreen
-    postfx.updateResolution()
+    postfx.reset()
     if Game.id then Game.id:resolutionChanged() end
     return true
   else

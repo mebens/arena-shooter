@@ -7,6 +7,7 @@ require("lib.debug.commands")
 require("lib.input")
 require("lib.physics")
 require("lib.tweens")
+require("lib.postfx")
 
 require("misc.utils")
 require("misc.Text")
@@ -16,7 +17,6 @@ require("misc.Timers")
 require("misc.GameCamera")
 
 require("modules.data")
-require("modules.postfx")
 debug.include(require("modules.commands"))
 require("modules.effects.bloom")
 require("modules.effects.blur")
@@ -58,11 +58,7 @@ function love.load()
   postfx.init()
   data.init()
   debug.init()
-  
-  -- postfx
-  postfx.add(blur)
-  postfx.add(bloom)
-  postfx.add(noise)
+  postfx.addList(blur, bloom, noise)
   
   -- misc
   love.mouse.setVisible(false)  

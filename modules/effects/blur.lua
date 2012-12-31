@@ -5,7 +5,7 @@ function blur:init()
   self.supported = postfx.supported
   self.alphaMultipler = 15
   self.minAlpha = 1
-  if self.supported then self:updateResolution() end
+  if self.supported then self:reset() end
 end
 
 function blur:draw(canvas)
@@ -18,6 +18,6 @@ function blur:draw(canvas)
   return self.canvas
 end
 
-function blur:updateResolution()
+function blur:reset()
   self.canvas = love.graphics.newCanvas()
 end

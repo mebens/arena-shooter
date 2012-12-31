@@ -2,9 +2,9 @@ bloom = {}
 bloom.active = true
 
 function bloom:init()
-  self.supported = postfx.effectsSupported
+  self.supported = postfx.fxSupported
   self.effect = assets.effects.bloom
-  if self.supported then self:updateResolution() end
+  if self.supported then self:reset() end
 end
 
 function bloom:draw(canvas)
@@ -22,6 +22,6 @@ function bloom:draw(canvas)
   postfx.swap()
 end
 
-function bloom:updateResolution()
+function bloom:reset()
   self.effect:send("size", { love.graphics.width, love.graphics.height })
 end

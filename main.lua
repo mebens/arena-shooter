@@ -15,6 +15,7 @@ require("misc.MessageEnabled")
 require("misc.ColorRotator")
 require("misc.Timers")
 require("misc.GameCamera")
+require("misc.EditorCamera")
 
 require("modules.data")
 debug.include(require("modules.commands"))
@@ -46,6 +47,7 @@ require("worlds.Game")
 require("worlds.MainMenu")
 require("worlds.PauseMenu")
 require("worlds.MenuBackground")
+require("worlds.Editor")
 
 function love.load()
   -- assets
@@ -58,12 +60,12 @@ function love.load()
   postfx.init()
   data.init()
   debug.init()
-  postfx.addList(blur, bloom, noise)
+  postfx.addList(bloom, noise)
   
   -- misc
   love.mouse.setVisible(false)  
   log = debug.log
-  ammo.world = MainMenu:new()
+  ammo.world = Editor:new()
   
   -- player controls
   input.define("left", "a", "left")
@@ -81,6 +83,15 @@ function love.load()
   -- menu/hud controls
   input.define("select", "return", " ")
   input.define("debug", "`")
+  
+  -- editor controls
+  input.define("editorWalls", "1")
+  input.define("editorSpawn", "2")
+  input.define("editorPlayer", "3")
+  input.define("editorDelete", "backspace", "delete")
+  input.define("editorReset", "r")
+  input.define("editorLock", "lshift", "rshift")
+  input.define("editorSnap", "lalt", "ralt")
 end
 
 function love.update(dt)

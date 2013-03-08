@@ -8,6 +8,7 @@ function SelectionItem:initialize(title, options, callback, callbackSelf, defaul
 end
 
 function SelectionItem:update(dt)
+  self.text.width = love.graphics.width
   if not self.activated or not self.menu.active then return end
   local left = input.pressed("left") and self.current > 1  
   local right = input.pressed("right") and self.current < #self.options

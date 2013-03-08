@@ -1,17 +1,16 @@
 Menu = class("Menu", Entity)
 
-function Menu:initialize(inX, outX, y, out)
-  Entity.initialize(self, out and outX or inX, y)
-  self.inX = inX
-  self.outX = outX
-  self.transitionTime = 0.35
+function Menu:initialize(y, active, parent)
+  Entity.initialize(self, 0, y)
   self.padding = 0
-  
+  self.parent = parent
   self.list = {}
   self.current = 1
   self.visible = false
   self.currentY = 0
-  if out then self.active = false end
+  
+  if active == nil then active = true end
+  self.active = active
 end
 
 function Menu:added()
@@ -43,7 +42,10 @@ function Menu:activate(index)
 end
 
 function Menu:switch(menu)
-  self:animate(self.transitionTime, { x = self.outX })
-  menu:animate(menu.transitionTime, { x = menu.inX }, nil, function() menu.active = true end)
+  menu.active = true
   self.active = false
+end
+
+function Menu:back()
+  if self.parent then self:switch(self.parent) end
 end

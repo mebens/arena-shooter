@@ -7,8 +7,8 @@ function ToggleItem:initialize(title, callback, callbackSelf, default, key)
 end
 
 function ToggleItem:update(dt)
-  if not self.menu.active then return end
   MenuItem.update(self, dt)
+  if not self.menu.active then return end
   
   if self.activated and (input.pressed("left") or input.pressed("right")) then
     self:selected()

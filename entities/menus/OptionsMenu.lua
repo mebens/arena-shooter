@@ -1,8 +1,7 @@
 OptionsMenu = class("OptionsMenu", Menu)
 
-function OptionsMenu:initialize(inX, outX, y, out, parent)
-  Menu.initialize(self, inX, outX, y, out)
-  self.parent = parent
+function OptionsMenu:initialize(y, active, parent)
+  Menu.initialize(self, y, active, parent)
   self.resolution = SelectionItem:new("Resolution", data.resolutions, self.setResolution, self, data.resolution)
   self.fullscreen = ToggleItem:new("Fullscreen", self.setFullscreen, self, data.fullscreen)
   self.vsync = ToggleItem:new("V-Sync", self.setVsync, self, data.vsync)
@@ -89,8 +88,4 @@ end
 function OptionsMenu:reset()
   data.resetOptions()
   self:apply()
-end
-
-function OptionsMenu:back()
-  self:switch(self.parent)
 end

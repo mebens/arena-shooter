@@ -65,7 +65,7 @@ function love.load()
   -- misc
   love.mouse.setVisible(false)  
   log = debug.log
-  ammo.world = Editor:new()
+  ammo.world = MainMenu:new()
   
   -- player controls
   input.define("left", "a", "left")

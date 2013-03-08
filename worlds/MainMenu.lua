@@ -2,17 +2,15 @@ MainMenu = class("MainMenu", World)
 
 function MainMenu:initialize()
   World.initialize(self)
-  self.menuInX = 100
-  self.menuOutX = -600
   self.menuY = 100
   self.fade = Fade:new()
   self.background = MenuBackground:new()
   
-  self.menu = Menu:new(self.menuInX, self.menuOutX, self.menuY)
+  self.menu = Menu:new(self.menuY)
   self.menu:add(MenuItem:new("Play", self.play, self))
   self.menu:add(MenuItem:new("Options", self.showOptions, self))
   self.menu:add(MenuItem:new("Quit", self.quit, self))
-  self.options = OptionsMenu:new(self.menuInX, self.menuOutX, self.menuY, true, self.menu)
+  self.options = OptionsMenu:new(self.menuY, false, self.menu)
   self:add(self.fade, self.menu, self.options)
 end
 

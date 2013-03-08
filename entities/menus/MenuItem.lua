@@ -7,12 +7,13 @@ function MenuItem:initialize(title, callback, callbackSelf, key)
   self.callbackSelf = callbackSelf
   self.key = key
   self.activated = false
-  self.text = Text:new{title, font = assets.fonts.main[32], color = { 255, 255, 255, 180 }}
+  self.text = Text:new{title, align = "center", font = assets.fonts.main[32], color = { 255, 255, 255, 180 }}
   self.width = self.text.fontWidth
   self.height = self.text.fontHeight
 end
 
 function MenuItem:update(dt)
+  self.text.width = love.graphics.width
   if not self.menu.active then return end
   
   if (self.activated and input.pressed("select")) or (self.key and key.pressed[self.key]) then
@@ -21,6 +22,7 @@ function MenuItem:update(dt)
 end
 
 function MenuItem:draw()
+  if not self.menu.active then return end
   self.text:draw(self.menu.x + self.x, self.menu.y + self.y)
 end
 

@@ -2,18 +2,16 @@ PauseMenu = class("PauseMenu", World)
 
 function PauseMenu:initialize()
   World.initialize(self)
-  self.menuInX = 100
-  self.menuOutX = -600
   self.menuY = 100
   PauseMenu.static.id = self
   
-  self.menu = Menu:new(self.menuInX, self.menuOutX, self.menuY)
+  self.menu = Menu:new(self.menuY)
   self.menu:add(MenuItem:new("Resume", self.resume, self, "escape"))
   self.menu:add(MenuItem:new("Reset", self.reset, self))
   self.menu:add(MenuItem:new("Options", self.showOptions, self))
   self.menu:add(MenuItem:new("Quit", self.quit))
   
-  self.options = OptionsMenu:new(self.menuInX, self.menuOutX, self.menuY, true, self.menu)
+  self.options = OptionsMenu:new(self.menuY, false, self.menu)
   self.fade = Fade:new()
   self:add(self.fade, self.menu, self.options)
 end

@@ -1,8 +1,7 @@
 InternalBarrier = class("InternalBarrier", Barrier)
-InternalBarrier.all = {}
 
-function InternalBarrier:initialize(type, x, y, width, height)
-  Barrier.initialize(self, type)
+function InternalBarrier:initialize(numSides, x, y, width, height)
+  Barrier.initialize(self, numSides)
   self.x = x
   self.y = y
   self.width = width
@@ -11,26 +10,25 @@ end
 
 function InternalBarrier:added()
   Barrier.added(self)
-  InternalBarrier.all[#InternalBarrier.all + 1] = self
-  self.classIndex = #InternalBarrier.all
-  
   local w = self.width
   local h = self.height
   
-  if self.type == "rectangle" then
+  if self.numSides == 4 then
     self.shape = love.physics.newRectangleShape(0, 0, w, h)
-  elseif self.type == "pentagon" then
+  else
+    local points = {}
+    local n = self.numSides
     
-  elseif self.type == "hexagon" then
+    for i = 0, n - 1 do
+      points[#points + 1] = w * math.cos(math.tau * (i / n))
+      points[#points + 1] = w * math.sin(math.tau * (i / n))
+    end
     
+    self.shape = love.physics.newPolygonShape(unpack(points))
   end
   
   local fixture = self:addShape(self.shape)
   fixture:setCategory(16)
-end
-
-function InternalBarrier:removed()
-  table.remove(InternalBarrier.all, self.classIndex)
 end
 
 function InternalBarrier:draw()

@@ -1,10 +1,10 @@
 Barrier = class("Barrier", PhysicalEntity)
 
-function Barrier:initialize(type)
+function Barrier:initialize(numSides)
   PhysicalEntity.initialize(self)
   self.layer = 1
   self.padding = 5
-  self.type = type or "rectangle"
+  self.numSides = numSides or 4
   self.color = { 240, 240, 240, 240 }
 end
 

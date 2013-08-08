@@ -1,15 +1,17 @@
 Game = class("Game", PhysicalWorld):include(MessageEnabled)
 
-function Game:initialize(designFunc, width, height)
+function Game:initialize(design, width, height)
   PhysicalWorld.initialize(self, 0, 0)
   self:setupMessages()
   love.physics.setMeter(50)
   
-  self.width = width or 1680
-  self.height = height or 1050
+  self.design = design or arenas[1]
+  self.width = width or self.design.width or 1680
+  self.height = height or self.design.height or 1050
   self.paused = false
   self.over = false
   self.deltaFactor = 1
+  self.internalBarriers = {}
   Game.static.id = self
 
   self.maxSlowmo = 2
@@ -22,7 +24,7 @@ function Game:initialize(designFunc, width, height)
   self.score = ScoreTracker:new()
   self.fade = Fade:new(0.5, true)
   self.hud = HUD:new()
-  self.player = Player:new(50, self.height / 2)
+  self.player = Player:new(self.width / 2, self.height / 2)
   self.background = Background:new()
   
   self:setupLayers{
@@ -40,24 +42,8 @@ function Game:initialize(designFunc, width, height)
   }
   
   self:add(self.score, self.fade, self.hud, self.player)
-  designFunc = designFunc or self.defaultSetup
-  designFunc(self, self.width, self.height)
+  self.design.func(self, self.width, self.height)
   self:add(self.background)
-end
-
-function Game:defaultSetup(width, height)
-  local padding = 40
-  self.player.x = width / 2
-  self.player.y = padding
-  
-  self:add(
-    ExternalBarrier:new(),
-    InternalBarrier:new("rectangle", width / 2, height / 2, width / 4, height / 4),
-    EnemySpawner:new(padding, padding),
-    EnemySpawner:new(width - padding, padding),
-    EnemySpawner:new(padding, height - padding),
-    EnemySpawner:new(width - padding, height - padding)
-  )
 end
 
 function Game:start()
@@ -65,7 +51,12 @@ function Game:start()
 end
 
 function Game:update(dt)
-  if input.pressed("pause") then self:pause() end
+  if key.pressed.kp0 then
+    self.paused = not self.paused
+  elseif input.pressed("pause") then
+    self:pause()
+  end
+  
   if self.paused then return end
   
   if not self.over then
@@ -130,8 +121,20 @@ function Game:unpause()
   self.paused = false
 end
 
+function Game:createExternalBarrier(numSides)
+  self.barrier = ExternalBarrier:new(numSides)
+  self:add(self.barrier)
+end
+
+function Game:addInternalBarrier(...)
+  for _, v in pairs{...} do
+    self:add(v)
+    self.internalBarriers[#self.internalBarriers + 1] = v
+  end
+end
+
 function Game:reset()
-  ammo.world = Game:new() -- quick, temporary way of doing it
+  ammo.world = Game:new(self.design, self.width, self.height)
 end
 
 function Game:stopGameOverSlowmo()

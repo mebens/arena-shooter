@@ -29,9 +29,35 @@ end
 
 function Background:resize()
   local bw, bh, bp = Background.boxWidth, Background.boxWidth, Background.boxPadding
-  self.canvas = love.graphics.newCanvas(self.world.width, self.world.height)
-  love.graphics.setCanvas(self.canvas)
+  local w, h = self.world.width, self.world.height
+  
+  -- subtractive layer
+  local subLayer = love.graphics.newCanvas(w, h)
+  love.graphics.setCanvas(subLayer)
   love.graphics.storeColor()
+  
+  -- initial blank slate
+  love.graphics.setColor(255, 255, 255)
+  love.graphics.rectangle("fill", 0, 0, w, h)
+  love.graphics.setColor(0, 0, 0)
+  
+  -- external barrier
+  if self.world.barrier.numSides == 4 then
+    love.graphics.rectangle("fill", 0, 0, w, h)
+  else
+    love.graphics.polygon("fill", unpack(self.world.barrier.points))
+  end
+  
+  -- internal barriers
+  love.graphics.setColor(255, 255, 255)
+  
+  for _, v in pairs(self.world.internalBarriers) do
+    love.graphics.polygon("fill", v:getWorldPoints(v.shape:getPoints()))
+  end
+  
+  -- main background canvas
+  self.canvas = love.graphics.newCanvas(w, h)
+  love.graphics.setCanvas(self.canvas)
   love.graphics.setColor(255, 255, 255)
   
   for x = 0, math.ceil(self.world.width / (bw + bp)) do
@@ -41,11 +67,7 @@ function Background:resize()
   end
   
   love.graphics.setBlendMode("subtractive")
-  
-  for _, v in pairs(InternalBarrier.all) do
-    love.graphics.polygon("fill", v:getWorldPoints(v.shape:getPoints()))
-  end
-  
+  love.graphics.draw(subLayer, 0, 0)
   love.graphics.setBlendMode("alpha")
   love.graphics.resetColor()
   love.graphics.setCanvas()

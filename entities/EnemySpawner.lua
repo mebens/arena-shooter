@@ -5,10 +5,10 @@ EnemySpawner.static.colors = {
   { 190, 190, 190 }
 }
   
-function EnemySpawner:initialize(x, y)
+function EnemySpawner:initialize(x, y, baseRate)
   Entity.initialize(self, x, y)
   self.visible = false
-  self.baseRate = 2
+  self.baseRate = baseRate or 2
   self.timer = 0
 end
 

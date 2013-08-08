@@ -15,12 +15,18 @@ function SelectionItem:update(dt)
   
   if left or right then
     self:select(self.current + (left and -1 or 1))
+    if not self.callback then return end
     
     if self.callbackSelf then
       self.callback(self.callbackSelf, self.options[self.current], self.current)
     else
       self.callback(self.options[self.current], self.current)
     end
+  end
+  
+  if self.selectCallback and input.pressed("select") then
+    print(self.callbackSelf)
+    self.selectCallback(self.callbackSelf)
   end
 end
 

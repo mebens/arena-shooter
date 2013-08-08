@@ -10,8 +10,9 @@ function MainMenu:initialize()
   self.menu:add(MenuItem:new("Play", self.play, self))
   self.menu:add(MenuItem:new("Options", self.showOptions, self))
   self.menu:add(MenuItem:new("Quit", self.quit, self))
+  self.arenas = ArenasMenu:new(self.menuY, false, self.menu, self.fade)
   self.options = OptionsMenu:new(self.menuY, false, self.menu)
-  self:add(self.fade, self.menu, self.options)
+  self:add(self.fade, self.menu, self.options, self.arenas)
 end
 
 function MainMenu:start()
@@ -34,7 +35,7 @@ function MainMenu:draw()
 end
 
 function MainMenu:play()
-  self.fade:fadeOut(function() ammo.world = Game:new() end)
+  self.menu:switch(self.arenas)
 end
 
 function MainMenu:showOptions()

@@ -1,12 +1,12 @@
 Game = class("Game", PhysicalWorld):include(MessageEnabled)
 
-function Game:initialize(width, height)
+function Game:initialize(designFunc, width, height)
   PhysicalWorld.initialize(self, 0, 0)
   self:setupMessages()
   love.physics.setMeter(50)
   
-  self.width = width or 1440
-  self.height = height or 900
+  self.width = width or 1680
+  self.height = height or 1050
   self.paused = false
   self.over = false
   self.deltaFactor = 1
@@ -22,7 +22,7 @@ function Game:initialize(width, height)
   self.score = ScoreTracker:new()
   self.fade = Fade:new(0.5, true)
   self.hud = HUD:new()
-  self.player = Player:new(self.width / 2, self.height / 2)
+  self.player = Player:new(50, self.height / 2)
   self.background = Background:new()
   
   self:setupLayers{
@@ -39,19 +39,24 @@ function Game:initialize(width, height)
     [6] = 1 -- background
   }
   
+  self:add(self.score, self.fade, self.hud, self.player)
+  designFunc = designFunc or self.defaultSetup
+  designFunc(self, self.width, self.height)
+  self:add(self.background)
+end
+
+function Game:defaultSetup(width, height)
   local padding = 40
+  self.player.x = width / 2
+  self.player.y = padding
   
   self:add(
-    self.score,
-    self.fade,
-    self.hud,
-    Barrier:new(),
-    self.player,
-    self.background,
+    ExternalBarrier:new(),
+    InternalBarrier:new("rectangle", width / 2, height / 2, width / 4, height / 4),
     EnemySpawner:new(padding, padding),
-    EnemySpawner:new(self.width - padding, padding),
-    EnemySpawner:new(padding, self.height - padding),
-    EnemySpawner:new(self.width - padding, self.height - padding)
+    EnemySpawner:new(width - padding, padding),
+    EnemySpawner:new(padding, height - padding),
+    EnemySpawner:new(width - padding, height - padding)
   )
 end
 

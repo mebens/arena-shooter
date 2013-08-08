@@ -39,6 +39,7 @@ end
 
 function Missile:added()
   self:setupBody()
+  self:setBullet(true)
   self.fixture = self:addShape(love.physics.newRectangleShape(self.width, self.height))
   self.fixture:setMask(2)
   self.fixture:setSensor(true)

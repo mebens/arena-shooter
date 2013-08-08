@@ -42,8 +42,8 @@ function Menu:activate(index)
 end
 
 function Menu:switch(menu)
-  menu.active = true
   self.active = false
+  delay(0, function() menu.active = true end)
 end
 
 function Menu:back()

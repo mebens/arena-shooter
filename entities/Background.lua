@@ -31,6 +31,8 @@ function Background:resize()
   local bw, bh, bp = Background.boxWidth, Background.boxWidth, Background.boxPadding
   self.canvas = love.graphics.newCanvas(self.world.width, self.world.height)
   love.graphics.setCanvas(self.canvas)
+  love.graphics.storeColor()
+  love.graphics.setColor(255, 255, 255)
   
   for x = 0, math.ceil(self.world.width / (bw + bp)) do
     for y = 0, math.ceil(self.world.height / (bh + bp)) do
@@ -38,5 +40,13 @@ function Background:resize()
     end
   end
   
+  love.graphics.setBlendMode("subtractive")
+  
+  for _, v in pairs(InternalBarrier.all) do
+    love.graphics.polygon("fill", v:getWorldPoints(v.shape:getPoints()))
+  end
+  
+  love.graphics.setBlendMode("alpha")
+  love.graphics.resetColor()
   love.graphics.setCanvas()
 end

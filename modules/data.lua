@@ -33,11 +33,11 @@ function data.apply()
   noise.active = postfx.fxSupported and data.noise or false
   
   local width, height = data.resolutions[data.resolution]:match("(%d+)x(%d+)")
-  width = tonumber(width)
-  height = tonumber(height)
+  data.resolutionWidth = tonumber(width)
+  data.resolutionHeight = tonumber(height)
   
-  if love.graphics.checkMode(width, height, data.fullscreen) then
-    love.graphics.setMode(width, height, data.fullscreen, data.vsync)
+  if love.graphics.checkMode(data.resolutionWidth, data.resolutionHeight, data.fullscreen) then
+    love.graphics.setMode(data.resolutionWidth, data.resolutionHeight, data.fullscreen, data.vsync)
     data.safeResolution = data.resolution
     data.safeFullscreen = data.fullscreen
     postfx.reset()

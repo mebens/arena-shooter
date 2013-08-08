@@ -20,6 +20,34 @@ function drawArc(x, y, r, angle1, angle2, segments)
   end  
 end
 
+function drawBlackBg(alpha)
+  love.graphics.storeColor()
+  love.graphics.setColor(0, 0, 0, alpha)
+  love.graphics.rectangle("fill", 0, 0, love.graphics.width, love.graphics.height)
+  love.graphics.resetColor()
+end
+
+function setMouseCoords(world)
+  mouse.x = love.mouse.getX(world.camera)
+  mouse.y = love.mouse.getY(world.camera)
+end
+
+function Entity:drawImage(image, x, y)
+  image = image or self.image
+  if self.color then love.graphics.setColor(self.color) end
+  
+  love.graphics.draw(
+    image or self.image,
+    x or self.x,
+    y or self.y,
+    self.angle,
+    self.scaleX or self.scale or 1,
+    self.scaleY or self.scale or 1,
+    image:getWidth() / 2,
+    image:getHeight() / 2
+  )
+end
+
 -- currently unused, but I'll keep it for now
 function makeFadedRect(width, height, divider, r, g, b, a)
   local data = love.image.newImageData(width, height)
@@ -47,32 +75,4 @@ function makeFadedRect(width, height, divider, r, g, b, a)
   end)
   
   return love.graphics.newImage(data)
-end
-
-function drawBlackBg(alpha)
-  love.graphics.storeColor()
-  love.graphics.setColor(0, 0, 0, alpha)
-  love.graphics.rectangle("fill", 0, 0, love.graphics.width, love.graphics.height)
-  love.graphics.resetColor()
-end
-
-function setMouseCoords(world)
-  mouse.x = love.mouse.getX(world.camera)
-  mouse.y = love.mouse.getY(world.camera)
-end
-
-function Entity:drawImage(image, x, y)
-  image = image or self.image
-  if self.color then love.graphics.setColor(self.color) end
-  
-  love.graphics.draw(
-    image or self.image,
-    x or self.x,
-    y or self.y,
-    self.angle,
-    self.scaleX or self.scale or 1,
-    self.scaleY or self.scale or 1,
-    image:getWidth() / 2,
-    image:getHeight() / 2
-  )
 end

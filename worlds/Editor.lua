@@ -5,11 +5,27 @@ function Editor:initialize()
   World.initialize(self)
   self.font = debug.settings.font
   self.camera = EditorCamera:new()
-  self.points = {}
+  self.shapes = {}
   self.spawns = {}
-  self.boxWidth = 40
-  self.boxHeight = 40
+  self.boxWidth = Enemy.width * 2
+  self.boxHeight = Enemy.height * 2
   self:resetPlayer()
+  
+  self.mode = ""
+  self.selectedShape = 0
+  self.shapeMode = 1
+  self.creatingShape = false
+  
+  self.inputModes = {
+    ["editorShapeSelect"] = "shapeSelect",
+    ["editorShapeMode"] = "shapeMode",
+    ["editorShapeNew"] = "shapeNew",
+    ["editorSpawn"] = "spawn",
+    ["editorPlayer"] = "player",
+    ["editorResetMode"] = ""
+  }
+  
+  self.shapeModes = { "rectangle", "pentagon", "hexagon" }
 end
 
 function Editor:start()
@@ -25,29 +41,53 @@ end
 function Editor:update(dt)
   World.update(self, dt)
   
-  if input.pressed("editorWalls") then
-    self.mode = self.mode ~= "walls" and "walls" or nil
-  elseif input.pressed("editorSpawn") then
-    self.mode = self.mode ~= "spawn" and "spawn" or nil
-  elseif input.pressed("editorPlayer") then
-    self.mode = self.mode ~= "player" and "player" or nil
+  -- mode inputs
+  for k, v in pairs(self.inputModes) do
+    if input.pressed(k) then self.mode = v end
   end
   
-  if self.mode == "walls" then
-    if mouse.pressed.l then
-      local px, py = mouse.x, mouse.y
-      
-      if #self.points >= 2 and input.down("editorLock") then
-        px, py = self:getLockedPoint(px, py)
+  if self.mode == "shapeSelect" then
+    -- shape selection
+    if #self.shapes > 1 then
+      if mouse.pressed.wu and self.selectedShape > 1 then
+        self.selectedShape = self.selectedShape - 1
+      elseif mouse.pressed.wd and self.selectedShape < #self.shapes then
+        self.selectedShape = self.selectedShape + 1
       end
+    end
+    
+    -- shape deletion
+    if input.pressed("editorDelete") then
+      table.remove(self.shapes, self.selectedShape)
       
-      self.points[#self.points + 1] = px
-      self.points[#self.points + 1] = py
-    elseif input.pressed("editorDelete") then
-      self.points[#self.points] = nil
-      self.points[#self.points] = nil
-    elseif input.pressed("editorReset") then
-      self.points = {}
+      if #self.shapes == 0 then
+        self.selectedShape = 0
+      elseif self.selectedShape == #self.shapes + 1 then
+        self.selectedShape = #self.shapes
+      end
+    end
+  elseif self.mode == "shapeMode" then
+    if mouse.pressed.wu and self.shapeMode > 1 then
+      self.shapeMode = self.shapeMode - 1
+    elseif mouse.pressed.wd and self.shapeMode < #self.shapes then
+      self.shapeMode = self.shapeMode + 1
+    end
+  elseif self.mode == "shapeNew" then
+    if self.creatingShape then
+      self:createShape()
+      
+      if input.pressed("editorCancel") then
+        self.creatingShape = false
+        self.workingShape = nil
+      elseif mouse.released.l then
+        self.shapes[#self.shapes + 1] = self.workingShape
+        self.workingShape = nil
+        self.creatingShape = false
+        self.selectedShape = #self.shapes
+      end
+    elseif mouse.pressed.l then
+      self.creatingShape = true
+      self.workingShape = { x = mouse.x, y = mouse.y }
     end
   elseif self.mode == "spawn" then
     if mouse.pressed.l then
@@ -70,49 +110,64 @@ function Editor:update(dt)
 end
 
 function Editor:draw()
-  love.graphics.setFont(self.font)
-  love.graphics.print(("Mode: %s\nMouse: %i, %i"):format(self.mode or "none", mouse.x, mouse.y), 5, 5)
-  self.camera:set()
+  -- info
+  local format = "Mouse: %i, %i\nEditor Mode: %s\nShape Mode: %s"
+  if self.mode == "shapeSelect" then format = format .. "\nSelected Shape: %i" end
   
-  local p = self.points
-  love.graphics.setLineWidth(5)
+  love.graphics.setFont(self.font)
+  love.graphics.print((format):format(
+    mouse.x,
+    mouse.y,
+    self.mode == "" and "none" or self.mode,
+    self.shapeModes[self.shapeMode],
+    self.selectedShape
+  ), 5, 5)
+  
+  self.camera:set()
   love.graphics.storeColor()
   
-  if self.mode == "walls" then
-    if #p >= 2 then
-      for i = 1, #p - 2, 2 do
-        love.graphics.line(p[i], p[i + 1], p[i + 2], p[i + 3])
-      end
-      
-      local mx, my = love.mouse.getWorldPosition()
-      if input.down("editorLock") then mx, my = self:getLockedPoint(mx, my) end
-      love.graphics.line(p[#p - 1], p[#p], mx, my)
-    end
-  else
-    if #p == 4 then
-      love.graphics.line(unpack(p))
-    elseif #p >= 6 then
-      love.graphics.polygon("line", p)
+  -- resolution box
+  love.graphics.setLineWidth(3)
+  love.graphics.setColor(200, 200, 200)
+  love.graphics.rectangle("line", 0, 0, data.resolutionWidth, data.resolutionHeight)
+  
+  -- shapes
+  love.graphics.setLineWidth(5)
+  
+  for i, v in ipairs(self.shapes) do
+    if self.mode == "shapeSelect" and self.selectedShape == i then
+      love.graphics.setColor(255, 50, 70)
+    else
+      love.graphics.setColor(255, 255, 255)
     end
     
-    if self.mode then
-      if self.mode == "spawn" then
-        love.graphics.setColor(255, 0, 0, 150)
-      else
-        love.graphics.setColor(0, 255, 0, 150)
-      end
-      
-      self:drawBox(mouse.x, mouse.y)
-    end
+    love.graphics.polygon("line", unpack(v))
   end
   
+  -- spawns
   for i = 1, #self.spawns, 2 do
     love.graphics.setColor(255, 0, 0)
     self:drawBox(self.spawns[i], self.spawns[i + 1])
   end
   
+  -- player
   love.graphics.setColor(0, 255, 0)
   self:drawBox(self.player.x, self.player.y)
+  
+  -- mode specific stuff
+  if self.creatingShape then
+    if #self.workingShape > 1 then
+      love.graphics.setLineWidth(5)
+      love.graphics.setColor(255, 255, 255, 150)
+      love.graphics.polygon("line", unpack(self.workingShape))
+    end
+  elseif self.mode == "spawn" then
+    love.graphics.setColor(255, 0, 0, 150)
+    self:drawBox(mouse.x, mouse.y)
+  elseif self.mode == "player" then
+    love.graphics.setColor(0, 255, 0, 150)
+    self:drawBox(mouse.x, mouse.y)
+  end
   
   love.graphics.resetColor()
   love.graphics.setLineWidth(1)
@@ -132,6 +187,25 @@ end
 
 function Editor:resetPlayer()
   self.player = { x = love.graphics.width / 2, y = love.graphics.height / 2 }
+end
+
+function Editor:createShape()
+  local mode = self.shapeModes[self.shapeMode]
+  local shape = self.workingShape
+  local ox, oy = shape.x, shape.y
+  local dist = math.distance(ox, oy, mouse.x, mouse.y)
+  local angle = math.angle(ox, oy, mouse.x, mouse.y)
+  
+  if mode == "rectangle" then
+    shape[1] = ox - dist * math.cos(angle)
+    shape[2] = oy - dist * math.sin(angle)
+    shape[3] = ox + dist * math.cos(angle)
+    shape[4] = oy - dist * math.sin(angle)
+    shape[5] = ox + dist * math.cos(angle)
+    shape[6] = oy + dist * math.sin(angle)
+    shape[7] = ox - dist * math.cos(angle)
+    shape[8] = oy + dist * math.sin(angle)
+  end
 end
 
 function Editor:load(name)

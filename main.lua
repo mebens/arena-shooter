@@ -85,16 +85,28 @@ function love.load()
   input.define("debug", "`")
   
   -- editor controls
-  input.define("editorWalls", "1")
-  input.define("editorSpawn", "2")
-  input.define("editorPlayer", "3")
+  input.define("editorShapeSelect", "1")
+  input.define("editorShapeMode", "2")
+  input.define("editorShapeNew", "3")
+  input.define("editorSpawn", "4")
+  input.define("editorPlayer", "5")
+  input.define("editorResetMode", "0")
   input.define("editorDelete", "backspace", "delete")
+  input.define("editorCancel", "escape", "backspace", "delete")
   input.define("editorReset", "r")
   input.define("editorLock", "lshift", "rshift")
   input.define("editorSnap", "lalt", "ralt")
 end
 
 function love.update(dt)
+  if key.down.lctrl and key.pressed.e then
+    if ammo.world.class == Editor then
+      ammo.world = MainMenu:new()
+    else
+      ammo.world = Editor:new()
+    end
+  end
+  
   ammo.update(dt)
   debug.update(dt)
   input.update()

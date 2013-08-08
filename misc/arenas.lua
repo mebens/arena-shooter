@@ -49,11 +49,14 @@ arenas[#arenas + 1] = {
 }
 
 arenas[#arenas + 1] = {
-  title = "Hexagon",
-  width = 1680,
-  height = 1680,
+  title = "Hexanut",
+  width = 1350,
+  height = 1350,
   func = function(self, width)
-    self:createExternalBarrier(8)
-    --self:addInternalBarrier(InternalBarrier:new(8, width / 2, width / 2, width / 8))
+    self.player.x = width / 2
+    self.player.y = width / 2 + (math.random(2) == 1 and -width / 8 - 60 or width / 8 + 60)
+    self:createExternalBarrier(6)
+    self:addInternalBarrier(InternalBarrier:new(6, width / 2, width / 2, width / 8))
+    self:add(EnemySpawner:new(width / 2, 120), EnemySpawner:new(width / 2, width - 120))
   end
 }

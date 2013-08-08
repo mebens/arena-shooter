@@ -21,11 +21,11 @@ function ExternalBarrier:added()
   else
     local n = self.numSides
     self.points = {}
-
+    w = w / 2
     for i = 0, n - 1 do
       local j = (i + 1) % n
       vp = vp / 2
-      w = w / 2
+      
       -- angles for the two points and the edge
       local iangle = math.tau * (i / n)
       local jangle = math.tau * (j / n)

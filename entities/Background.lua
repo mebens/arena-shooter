@@ -32,14 +32,14 @@ function Background:resize()
   local w, h = self.world.width, self.world.height
   
   -- subtractive layer
-  local subLayer = love.graphics.newCanvas(w, h)
-  love.graphics.setCanvas(subLayer)
+  local mulLayer = love.graphics.newCanvas(w, h)
+  love.graphics.setCanvas(mulLayer)
   love.graphics.storeColor()
   
   -- initial blank slate
-  love.graphics.setColor(255, 255, 255)
-  love.graphics.rectangle("fill", 0, 0, w, h)
   love.graphics.setColor(0, 0, 0)
+  love.graphics.rectangle("fill", 0, 0, w, h)
+  love.graphics.setColor(255, 255, 255)
   
   -- external barrier
   if self.world.barrier.numSides == 4 then
@@ -49,7 +49,7 @@ function Background:resize()
   end
   
   -- internal barriers
-  love.graphics.setColor(255, 255, 255)
+  love.graphics.setColor(0, 0, 0)
   
   for _, v in pairs(self.world.internalBarriers) do
     love.graphics.polygon("fill", v:getWorldPoints(v.shape:getPoints()))
@@ -66,8 +66,8 @@ function Background:resize()
     end
   end
   
-  love.graphics.setBlendMode("subtractive")
-  love.graphics.draw(subLayer, 0, 0)
+  love.graphics.setBlendMode("multiplicative") -- subtractive won't work for some reason
+  love.graphics.draw(mulLayer, 0, 0)
   love.graphics.setBlendMode("alpha")
   love.graphics.resetColor()
   love.graphics.setCanvas()

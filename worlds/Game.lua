@@ -8,10 +8,11 @@ function Game:initialize(design, width, height)
   self.design = design or arenas[1]
   self.width = width or self.design.width or 1680
   self.height = height or self.design.height or 1050
+  self.internalBarriers = {}
   self.paused = false
   self.over = false
+  self.score = 0
   self.deltaFactor = 1
-  self.internalBarriers = {}
   Game.static.id = self
 
   self.maxSlowmo = 2
@@ -21,7 +22,6 @@ function Game:initialize(design, width, height)
   self.slowmoActive = false
   
   self.camera = GameCamera:new()
-  self.score = ScoreTracker:new()
   self.fade = Fade:new(0.5, true)
   self.hud = HUD:new()
   self.player = Player:new(self.width / 2, self.height / 2)
@@ -42,9 +42,9 @@ function Game:initialize(design, width, height)
     [7] = 1 -- background
   }
   
-  self:add(self.score, self.fade, self.hud, self.player)
+  self:add(self.fade, self.hud, self.player)
   self.design.func(self, self.width, self.height)
-  self:addListener("gem.collected", self.spawnGem, self)
+  self:addListener("gem.collected", self.gemCollected, self)
 end
 
 function Game:start()
@@ -112,19 +112,28 @@ function Game:gameOver()
   self.hud.drawCursor = false
 end
 
+function Game:gemCollected()
+  self.score = self.score + 1
+  self:spawnGem()
+end
+
 function Game:spawnGem()
-  local colliding = false
+  local regen = false
   local padding = 30
   local x, y
   
   repeat
-    colliding = false
+    regen = false
     x = math.random(padding, self.width - padding)
     y = math.random(padding, self.height - padding)
-    local r, g, b = self.gemMask:getPixel(x, y)
-    if r ~= 255 or g ~= 255 or b ~= 255 then colliding = true end
-  until not colliding
+    if math.distance(self.player.x, self.player.y, x, y) < 200 then regen = true end
     
+    if not regen then
+      local r, g, b = self.gemMask:getPixel(x, y)
+      if r ~= 255 or g ~= 255 or b ~= 255 then regen = true end
+    end
+  until not regen
+  
   self:add(Gem:new(x, y))
 end
       
@@ -132,7 +141,6 @@ end
 function Game:resolutionChanged()
   self.camera:update()
   self.hud:adjustText()
-  --self.background:resize()
 end
 
 function Game:pause()
@@ -195,6 +203,6 @@ end
 
 function Game:gameOverSlowmoStopped()
   self.canReset = true
-  data.score(self.score.score)
+  data.score(self.score)
   self.hud:gameOver()
 end

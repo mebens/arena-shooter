@@ -10,7 +10,8 @@ function Player:initialize(x, y)
   self.height = 50
   self.scale = 1
   self.moveForce = 3500
-  self:addTimer("missile", 0.5)
+  self.reverseForce = 4500
+  self:addTimer("missile", 0.5, 0 )
   
   -- live/death system
   self.lives = Player.maxLives
@@ -48,8 +49,16 @@ end
 function Player:update(dt)
   PhysicalEntity.update(self, dt)
   self:updateTimers(dt)
-  self:applyForce(input.axisDown("left", "right") * self.moveForce, input.axisDown("up", "down") * self.moveForce)
   self.angle = math.angle(self.x, self.y, mouse.x, mouse.y)
+  
+  local xAxis = input.axisDown("left", "right")
+  local yAxis = input.axisDown("up", "down")
+  local xVel, yVel = self:getLinearVelocity()
+  
+  self:applyForce(
+    xAxis * (math.sign(xVel) ~= xAxis and self.reverseForce or self.moveForce),
+    yAxis * (math.sign(yVel) ~= yAxis and self.reverseForce or self.moveForce)
+  )
   
   for i = 1, 2 do
     local axis = i == 1 and "x" or "y"

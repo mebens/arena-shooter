@@ -1,13 +1,13 @@
 Timers = {}
 
-function Timers:addTimer(name, limit)
+function Timers:addTimer(name, limit, starting)
   if not self.timers then self.timers = {} end
   
   local limitName = name .. "Time"
   local timeName = name .. "Timer"
   
   self[limitName] = limit
-  self[timeName] = limit
+  self[timeName] = starting or limit
   self.timers[name] = { time = timeName, limit = limitName }
 end
 

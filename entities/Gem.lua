@@ -27,7 +27,7 @@ function Gem:initialize(x, y)
   self.layer = 5
   self.width = Gem.size
   self.height = Gem.size
-  self.scale = 1
+  self.scale = 0
   self.rotateSpeed = math.tau / 2
   self.dead = false
   self.image = Gem.image
@@ -41,6 +41,7 @@ function Gem:added()
   self:setAngularDamping(1)
   self.fixture = self:addShape(love.physics.newRectangleShape(self.width, self.height))
   self.fixture:setCategory(4)
+  self:animate(0.5, { scale = 1 })
 end
 
 function Gem:update(dt)
@@ -55,19 +56,20 @@ end
 function Gem:die()
   if self.dead then return end
   self.dead = true
+  self.world:sendMessage("gem.collected")
+  local chunkColor = table.copy(self.color)
   
-  self:animate(.25, { scale = 2 }, ease.quadOut, function()
-    for i = 1, 8 do
-      if ExplosionChunk.count < ExplosionChunk.maxCount then
-        self.world:add(ExplosionChunk:new(self.x, self.y, math.random() * math.tau, self.color, 6, 10))
-      else
-        break
-      end
+  for i = 1, 8 do
+    if ExplosionChunk.count < ExplosionChunk.maxCount then
+      self.world:add(ExplosionChunk:new(self.x, self.y, math.random() * math.tau, chunkColor, 6, 10))
+    else
+      break
     end
-    
-    self.world:sendMessage("gem.collected")
-    self.world = nil 
-  end)
+  end
+  
+  self.color[4] = 200
+  self:animate(.4, { scale = 3 }, ease.quadOut, function() self.world = nil end)
+  tween(self.color, .4, { [4] = 0 }, ease.quadIn, function() self.world = nil end)
 end
 
 function Gem:collided(other, fixture, otherFixture, contact)

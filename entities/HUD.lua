@@ -80,7 +80,7 @@ end
 
 function HUD:update(dt)
   self.lifeParticles:update(dt)
-  self.score.text = self.world.score.score
+  self.score.text = self.world.score
 end
 
 function HUD:draw()
@@ -129,7 +129,7 @@ end
 
 function HUD:gameOver()
   self.over = true
-  self.overScore.text = "Score: " .. self.world.score.score
+  self.overScore.text = "Score: " .. self.world.score
   self.overHighscore.text = "Highscore: " .. data.highscore
   tween(self.playColor, 1, { [4] = 0 })
   tween(self.overColor, 1, { [4] = 255 })

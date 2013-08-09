@@ -17,6 +17,7 @@ function Missile:initialize(x, y, angle, color)
   self.velx = Missile.speed * math.cos(angle)
   self.vely = Missile.speed * math.sin(angle)
   self.image = Missile.image
+  self.dead = false
   self.color = table.copy(color)
   self.color[4] = 255
   
@@ -46,17 +47,24 @@ function Missile:added()
 end
 
 function Missile:update(dt)
+  self.particles:update(dt)
+  
+  if self.dead then
+    if self.particles:count() == 0 then self.world = nil end
+    return
+  end
+  
   PhysicalEntity.update(self, dt)
   self.particles:setPosition(self.x, self.y)
-  self.particles:update(dt)
 end
 
 function Missile:draw()
   love.graphics.draw(self.particles)
-  self:drawImage()
+  if not self.dead then self:drawImage() end
 end
 
 function Missile:collided(other, fixture, otherFixture, contact)
+  if self.dead then return end
   if instanceOf(ExplosionChunk, other) or instanceOf(Shrapnel, other) then return end
   self:explode()
   
@@ -69,7 +77,10 @@ end
 
 function Missile:explode()
   Shrapnel:explosion(self.x, self.y, math.random(40, 50), self.color, self.world)
+  self.dead = true
+  self.particles:setEmissionRate(0)
+  self.fixture:setMask(1, 2)
+  
   local distScale = math.min(math.abs(math.distance(self.x, self.y, self.world.player.x, self.world.player.y)) / Missile.shakeDistance, 1)
   self.world.camera:shake(math.scale(distScale, 0, 1, 1, 0) * Missile.shakeAmount, Missile.shakeTime)
-  self.world = nil
 end

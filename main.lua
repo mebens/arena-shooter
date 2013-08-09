@@ -24,7 +24,6 @@ require("modules.effects.bloom")
 require("modules.effects.blur")
 require("modules.effects.noise")
 
-require("entities.ScoreTracker")
 require("entities.Fade")
 require("entities.HUD")
 require("entities.Barrier")

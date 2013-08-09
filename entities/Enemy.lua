@@ -40,8 +40,8 @@ function Enemy:die()
   self.dead = true
   
   for i = 1, 10 do
-    if EnemyChunk.count < EnemyChunk.maxCount then
-      self.world:add(EnemyChunk:new(self.x, self.y, math.random() * math.tau, self.color))
+    if ExplosionChunk.count < ExplosionChunk.maxCount then
+      self.world:add(ExplosionChunk:new(self.x, self.y, math.random() * math.tau, self.color, 6, 10))
     else
       break
     end

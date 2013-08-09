@@ -22,6 +22,7 @@ function ExternalBarrier:added()
     local n = self.numSides
     self.points = {}
     w = w / 2
+    
     for i = 0, n - 1 do
       local j = (i + 1) % n
       vp = vp / 2

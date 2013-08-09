@@ -31,10 +31,10 @@ require("entities.Barrier")
 require("entities.ExternalBarrier")
 require("entities.InternalBarrier")
 require("entities.Player")
+require("entities.Gem")
 require("entities.Enemy")
-require("entities.BombEnemy")
 require("entities.EnemySpawner")
-require("entities.EnemyChunk")
+require("entities.ExplosionChunk")
 require("entities.Missile")
 require("entities.Shrapnel")
 require("entities.MissileSpawner")
@@ -104,7 +104,7 @@ end
 
 function love.update(dt)
   if key.down.lctrl and key.pressed.e then
-    if ammo.world.class == Editor then
+    if instanceOf(Editor, ammo.world) then
       ammo.world = MainMenu:new()
     else
       ammo.world = Editor:new()

@@ -14,7 +14,7 @@ end
 
 function Shrapnel:initialize(x, y, angle, color)
   PhysicalEntity.initialize(self, x, y, "dynamic")
-  self.layer = 5
+  self.layer = 6
   self.width = Shrapnel.width
   self.height = Shrapnel.height
   self.angle = angle

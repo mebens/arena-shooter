@@ -57,8 +57,8 @@ function Missile:draw()
 end
 
 function Missile:collided(other, fixture, otherFixture, contact)
-  if instanceOf(EnemyChunk, other) then return end
-  if not instanceOf(Shrapnel, other) or other:checkVelocity() then self:explode() end -- only explode for shrapnel if it has fatal velocity
+  if instanceOf(ExplosionChunk, other) or instanceOf(Shrapnel, other) then return end
+  self:explode()
   
   if instanceOf(Enemy, other) then
     other:die()

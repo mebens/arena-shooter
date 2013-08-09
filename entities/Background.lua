@@ -5,7 +5,7 @@ Background.static.boxPadding = 5
 
 function Background:initialize()
   Entity.initialize(self)
-  self.layer = 6
+  self.layer = 7
   self.colorTime = 3
   
   self.colors = {

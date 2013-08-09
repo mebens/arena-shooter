@@ -27,8 +27,8 @@ function InternalBarrier:added()
     self.shape = love.physics.newPolygonShape(unpack(points))
   end
   
-  local fixture = self:addShape(self.shape)
-  fixture:setCategory(16)
+  self.fixture = self:addShape(self.shape)
+  self.fixture:setCategory(16)
 end
 
 function InternalBarrier:draw()

@@ -21,6 +21,7 @@ end
 
 function ExplosionChunk:added()
   self:setupBody()
+  self:setAngularDamping(0.4)
   self.fixture = self:addShape(love.physics.newRectangleShape(self.width, self.height))
   self.fixture:setRestitution(0.75)
   tween(self.color, "0.5:1", { [4] = 0 }, nil, self.die, self)

@@ -44,13 +44,18 @@ function Game:initialize(design, width, height)
   
   self:add(self.score, self.fade, self.hud, self.player)
   self.design.func(self, self.width, self.height)
-  self:add(self.background)
   self:addListener("gem.collected", self.spawnGem, self)
 end
 
 function Game:start()
   self.fade:fadeIn()
-  self:spawnGem()
+  
+  -- gotta wait for the physics shapes to set up
+  delay(0, function()
+    self:generateMasks()
+    self:add(self.background)
+    self:spawnGem()
+  end)
 end
 
 function Game:update(dt)
@@ -113,40 +118,11 @@ function Game:spawnGem()
   local x, y
   
   repeat
-    x = math.random(padding, self.width)
-    y = math.random(padding, self.height)
-    
-    -- check that the angles to each point sum up to around math.tau (meaning it's inside the regular polygon)
-    if self.barrier.numSides ~= 4 then
-      local sumAngle = 0
-      local roundedTau = math.round(math.tau * 100) / 100 -- two points of precision
-      
-      for i = 1, #self.barrier.points, 2 do
-        sumAngle = sumAngle + math.angle(x, y, self.barrier.points[i], self.barrier.points[i + 1])
-      end
-      
-      sumAngle = math.round(sumAngle * 100) / 100
-      if sumAngle ~= roundedTau then colliding = true end
-    end
-    
-    -- check against the internal barriers
-    if not colliding and #self.internalBarriers > 0 then
-      local cos1 = (padding / 2) * math.cos(math.tau / 8) -- 45 degrees
-      local sin1 = (padding / 2) * math.sin(math.tau / 8)
-      local cos2 = (padding / 2) * math.cos(math.tau * .375) -- 135 degrees
-      local sin2 = (padding / 2) * math.sin(math.tau * .375)
-      
-      -- check raycast with two diagonal lines around the point, the size of padding
-      for _, v in pairs(self.internalBarriers) do
-        local ray1 = v.fixture:rayCast(x - cos1, y - sin1, x + cos1, y + sin1, 1)
-        local ray2 = v.fixture:rayCast(x - cos2, y - sin2, x + cos2, y + sin2, 1)
-        print(x, y, ray1, ray2)
-        if ray1 or ray2 then
-          colliding = true
-          break
-        end
-      end
-    end
+    colliding = false
+    x = math.random(padding, self.width - padding)
+    y = math.random(padding, self.height - padding)
+    local r, g, b = self.gemMask:getPixel(x, y)
+    if r ~= 255 or g ~= 255 or b ~= 255 then colliding = true end
   until not colliding
     
   self:add(Gem:new(x, y))
@@ -156,7 +132,7 @@ end
 function Game:resolutionChanged()
   self.camera:update()
   self.hud:adjustText()
-  self.background:resize()
+  --self.background:resize()
 end
 
 function Game:pause()
@@ -180,6 +156,33 @@ function Game:addInternalBarrier(...)
     self:add(v)
     self.internalBarriers[#self.internalBarriers + 1] = v
   end
+end
+
+function Game:generateMasks()
+  self.backgroundMask = love.graphics.newCanvas(self.width, self.height)
+  love.graphics.setCanvas(self.backgroundMask)
+  love.graphics.storeColor()
+  
+  -- initial blank slate
+  love.graphics.setColor(0, 0, 0)
+  love.graphics.rectangle("fill", 0, 0, self.width, self.height)
+  love.graphics.setColor(255, 255, 255)
+  
+  -- external barrier
+  if self.barrier.numSides == 4 then
+    love.graphics.rectangle("fill", 0, 0, self.width, self.height)
+  else
+    love.graphics.polygon("fill", unpack(self.barrier.points))
+  end
+  
+  -- internal barriers
+  love.graphics.setColor(0, 0, 0)
+  
+  for _, v in pairs(self.internalBarriers) do
+    love.graphics.polygon("fill", v:getWorldPoints(v.shape:getPoints()))
+  end
+  
+  self.gemMask = self.backgroundMask:getImageData()
 end
 
 function Game:reset()

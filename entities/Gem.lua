@@ -1,5 +1,5 @@
 Gem = class("Gem", PhysicalEntity)
-Gem.static.size = 15
+Gem.static.size = 20
 
 do
   local canvas = love.graphics.newCanvas(Gem.size * 2, Gem.size * 2)
@@ -23,7 +23,7 @@ do
 end
 
 function Gem:initialize(x, y)
-  PhysicalEntity.initialize(self, x, y, "static")
+  PhysicalEntity.initialize(self, x, y, "dynamic")
   self.layer = 5
   self.width = Gem.size
   self.height = Gem.size
@@ -36,8 +36,11 @@ end
 
 function Gem:added()
   self:setupBody()
+  self:setMass(50)
+  self:setLinearDamping(7)
+  self:setAngularDamping(1)
   self.fixture = self:addShape(love.physics.newRectangleShape(self.width, self.height))
-  self.fixture:setSensor(true)
+  self.fixture:setCategory(4)
 end
 
 function Gem:update(dt)
@@ -54,9 +57,9 @@ function Gem:die()
   self.dead = true
   
   self:animate(.25, { scale = 2 }, ease.quadOut, function()
-    for i = 1, 6 do
+    for i = 1, 8 do
       if ExplosionChunk.count < ExplosionChunk.maxCount then
-        self.world:add(ExplosionChunk:new(self.x, self.y, math.random() * math.tau, self.color, 3, 5))
+        self.world:add(ExplosionChunk:new(self.x, self.y, math.random() * math.tau, self.color, 6, 10))
       else
         break
       end
@@ -68,5 +71,6 @@ function Gem:die()
 end
 
 function Gem:collided(other, fixture, otherFixture, contact)
+  
   if instanceOf(Player, other) then self:die() end
 end

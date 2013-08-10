@@ -20,6 +20,7 @@ function Game:initialize(design, width, height)
   self.slowmoRecharge = 0.2
   self.slowmo = self.maxSlowmo
   self.slowmoActive = false
+  self.slowmoFadeTime = 0.3
   
   self.camera = GameCamera:new()
   self.fade = Fade:new(0.5, true)
@@ -73,7 +74,8 @@ function Game:update(dt)
       
       if self.slowmo <= 0 or input.released("slowmo") then
         if self.slowmoTween then self.slowmoTween:stop() end
-        self.slowmoTween = tween(self, 0.15, { deltaFactor = 1 })
+        self.slowmoTween = AttrTween:new(self, self.slowmoFadeTime, { deltaFactor = 1 })
+        self.slowmoTween:start()
         self.slowmoActive = false
       end
     else
@@ -83,7 +85,8 @@ function Game:update(dt)
       
       if self.slowmo > 0 and input.pressed("slowmo") then
         if self.slowmoTween then self.slowmoTween:stop() end
-        self.slowmoTween = tween(self, 0.15, { deltaFactor = self.slowmoFactor })
+        self.slowmoTween = AttrTween:new(self, self.slowmoFadeTime, { deltaFactor = self.slowmoFactor })
+        self.slowmoTween:start()
         self.slowmoActive = true
         self.player:showSlowmo()
       end
@@ -92,6 +95,7 @@ function Game:update(dt)
     self.fade:fadeOut(self.reset, self)
   end
   
+  if self.slowmoTween then self.slowmoTween:update(dt) end -- gotta update slowmo tweens before the delta gets changed
   dt = dt * self.deltaFactor
   _G.dt = dt
   postfx.update(dt)
@@ -107,9 +111,13 @@ end
 
 function Game:gameOver()
   if self.slowmoTween then self.slowmoTween:stop() end
-  self.slowmoTween = tween(self, 0.25, { deltaFactor = 0.1 }, nil, self.stopGameOverSlowmo, self)
+  --self.slowmoTween = AttrTween:new(self, 1.5, { deltaFactor = 0.1 }, ease.quadOut, self.stopGameOverSlowmo, self)
+  --self.slowmoTween:start()
   self.over = true
+  self.canReset = true
   self.hud.drawCursor = false
+  self:gameOverSlowmoStopped()
+  data.score(self)
 end
 
 function Game:gemCollected()
@@ -198,11 +206,10 @@ function Game:reset()
 end
 
 function Game:stopGameOverSlowmo()
-  self.slowmoTween = tween(self, "0.2:0.3", { deltaFactor = 1 }, nil, self.gameOverSlowmoStopped, self)
+  self.slowmoTween = AttrTween:new(self, "1.5:0.2", { deltaFactor = 1 }, ease.quadOut, self.gameOverSlowmoStopped, self)
+  self.slowmoTween:start()
 end
 
 function Game:gameOverSlowmoStopped()
-  self.canReset = true
-  data.score(self)
   self.hud:gameOver()
 end

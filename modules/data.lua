@@ -14,11 +14,27 @@ data.resolutions = {
   "2560x1600"
 }
 
+local function tableToString(t, str)
+  str = (str or "") .. "{"
+  
+  for k, v in pairs(t) do
+    if type(v) == "number" or type(v) == "boolean" then
+      str = str .. k .. "=" .. tostring(v) .. ","
+    elseif k ~= "resolutions" and type(v) == "table" then
+      str = str .. k .. "=" .. tableToString(v) .. ","
+    end
+  end
+  
+  str = str .. "}"
+  return str
+end
+
 function data.init()
   data.resetOptions()
-  data.highscore = 0
+  data.highscores = {}
   
   if love.filesystem.exists(data.filename) then
+    print(love.filesystem.read(data.filename))
     local t = loadstring(love.filesystem.read(data.filename))()
     for k, v in pairs(t) do data[k] = v end
   end
@@ -56,15 +72,7 @@ function data.apply()
 end
 
 function data.save()
-  local str = "return {"
-  
-  for k, v in pairs(data) do
-    if type(v) == "number" or type(v) == "boolean" then
-      str = str .. k .. "=" .. tostring(v) .. ","
-    end
-  end
-  
-  love.filesystem.write(data.filename, str .. "}")
+  love.filesystem.write(data.filename, tableToString(data, "return "))
 end
 
 function data.resetOptions()
@@ -77,7 +85,7 @@ function data.resetOptions()
   data.mouseGrab = false
 end
 
-function data.score(score)
-  data.highscore = math.max(score, data.highscore)
+function data.score(game)
+  data.highscores[game.design.name] = math.max(game.score, data.highscores[game.design.name] or 0)
   data.save()
 end

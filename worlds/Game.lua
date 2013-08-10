@@ -203,6 +203,6 @@ end
 
 function Game:gameOverSlowmoStopped()
   self.canReset = true
-  data.score(self.score)
+  data.score(self)
   self.hud:gameOver()
 end

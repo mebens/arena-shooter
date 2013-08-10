@@ -130,7 +130,7 @@ end
 function HUD:gameOver()
   self.over = true
   self.overScore.text = "Score: " .. self.world.score
-  self.overHighscore.text = "Highscore: " .. data.highscore
+  self.overHighscore.text = "Highscore: " .. data.highscores[self.world.design.name]
   tween(self.playColor, 1, { [4] = 0 })
   tween(self.overColor, 1, { [4] = 255 })
   self:animate(1, { backgroundAlpha = 100 })

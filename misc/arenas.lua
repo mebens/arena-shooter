@@ -12,6 +12,7 @@ end
 -- default setup
 arenas[#arenas + 1] = {
   title = "Rectangle",
+  name = "rectangle",
   width = 1440,
   height = 900,
   func = function(self, width, height)
@@ -22,6 +23,7 @@ arenas[#arenas + 1] = {
 
 arenas[#arenas + 1] = {
   title = "Box in a Box",
+  name = "box-in-a-box",
   func = function(self, width, height)
     self.player.x = width / 2
     self.player.y = math.random(2) == 1 and 60 or height - 60
@@ -33,6 +35,7 @@ arenas[#arenas + 1] = {
 
 arenas[#arenas + 1] = {
   title = "Pillars",
+  name = "pillars",
   func = function(self, width, height)
     local bw = self.width / 6 -- box dimensions
     local bh = self.height / 6
@@ -50,6 +53,7 @@ arenas[#arenas + 1] = {
 
 arenas[#arenas + 1] = {
   title = "Hexanut",
+  name = "hexanut",
   width = 1350,
   height = 1350,
   func = function(self, width)

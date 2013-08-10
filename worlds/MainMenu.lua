@@ -3,7 +3,7 @@ MainMenu = class("MainMenu", World)
 function MainMenu:initialize()
   World.initialize(self)
   self.menuY = 100
-  self.fade = Fade:new()
+  self.fade = Fade:new(0.5, true)
   self.background = MenuBackground:new()
   
   self.menu = Menu:new(self.menuY)
@@ -17,6 +17,7 @@ end
 
 function MainMenu:start()
   self.background:start()
+  self.fade:fadeIn()
 end
 
 function MainMenu:update(dt)

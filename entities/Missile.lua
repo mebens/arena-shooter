@@ -47,6 +47,7 @@ function Missile:added()
 end
 
 function Missile:update(dt)
+  self.particles:setPosition(self.x, self.y)
   self.particles:update(dt)
   
   if self.dead then
@@ -55,7 +56,6 @@ function Missile:update(dt)
   end
   
   PhysicalEntity.update(self, dt)
-  self.particles:setPosition(self.x, self.y)
 end
 
 function Missile:draw()
@@ -70,6 +70,9 @@ function Missile:collided(other, fixture, otherFixture, contact)
   
   if instanceOf(Enemy, other) then
     other:die()
+  elseif instanceOf(Gem, other) then
+    local angle = math.angle(self.x, self.y, other.x, other.y)
+    other:applyLinearImpulse(200 * math.cos(angle), 200 * math.sin(angle))
   elseif instanceOf(Missile, other) then
     other:explode()
   end
@@ -81,6 +84,7 @@ function Missile:explode()
   self.particles:setEmissionRate(0)
   self.fixture:setMask(1, 2)
   
+  -- camera shake
   local distScale = math.min(math.abs(math.distance(self.x, self.y, self.world.player.x, self.world.player.y)) / Missile.shakeDistance, 1)
   self.world.camera:shake(math.scale(distScale, 0, 1, 1, 0) * Missile.shakeAmount, Missile.shakeTime)
 end

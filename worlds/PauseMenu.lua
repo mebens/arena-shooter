@@ -9,6 +9,7 @@ function PauseMenu:initialize()
   self.menu:add(MenuItem:new("Resume", self.resume, self, "escape"))
   self.menu:add(MenuItem:new("Reset", self.reset, self))
   self.menu:add(MenuItem:new("Options", self.showOptions, self))
+  self.menu:add(MenuItem:new("Main Menu", self.mainMenu, self))
   self.menu:add(MenuItem:new("Quit", self.quit))
   
   self.options = OptionsMenu:new(self.menuY, false, self.menu)
@@ -41,6 +42,10 @@ function PauseMenu:showOptions()
   self.menu:switch(self.options)
 end
 
+function PauseMenu:mainMenu()
+  self.fade:fadeOut(self.menuFadeDone, self)
+end
+
 function PauseMenu:quit()
   love.event.quit()
 end
@@ -48,4 +53,8 @@ end
 function PauseMenu:resetFadeDone()
   Game.id:unpause()
   Game.id:reset()
+end
+
+function PauseMenu:menuFadeDone()
+  ammo.world = MainMenu:new()
 end

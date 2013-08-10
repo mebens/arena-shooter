@@ -1,5 +1,5 @@
 Gem = class("Gem", PhysicalEntity)
-Gem.static.size = 20
+Gem.static.size = 25
 
 do
   local canvas = love.graphics.newCanvas(Gem.size * 2, Gem.size * 2)
@@ -31,7 +31,7 @@ function Gem:initialize(x, y)
   self.rotateSpeed = math.tau / 2
   self.dead = false
   self.image = Gem.image
-  self.color = { 255, 230, 80 }
+  self.color = { 255, 255, 0 }
 end
 
 function Gem:added()

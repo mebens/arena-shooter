@@ -56,7 +56,7 @@ arenas[#arenas + 1] = {
     self.player.x = width / 2
     self.player.y = width / 2 + (math.random(2) == 1 and -width / 8 - 60 or width / 8 + 60)
     self:createExternalBarrier(6)
-    self:addInternalBarrier(InternalBarrier:new(6, width / 2, width / 2, width / 8))
-    self:add(EnemySpawner:new(width / 2, 120), EnemySpawner:new(width / 2, width - 120))
+    self:addInternalBarrier(InternalBarrier:new(6, width / 2, width / 2, width / 6))
+    self:add(EnemySpawner:new(width / 2, 120, 1.5), EnemySpawner:new(width / 2, width - 120, 1.5))
   end
 }

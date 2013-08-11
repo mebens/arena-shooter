@@ -44,10 +44,11 @@ function Game:initialize(design, width, height)
   self:add(self.hud, self.player)
   self.design.func(self, self.width, self.height)
   self:addListener("gem.collected", self.gemCollected, self)
-  fade.fadeIn()
 end
 
 function Game:start()
+  fade.fadeIn()
+  
   -- gotta wait for the physics shapes to set up
   delay(0, function()
     self:generateMasks()

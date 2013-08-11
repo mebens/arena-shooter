@@ -80,8 +80,10 @@ function love.load()
   
   -- world controls
   input.define("slowmo", " ")
-  input.define("reset", " ")
+  input.define("preReset", "return")
+  input.define("reset", "return", " ")
   input.define("pause", "escape", "p")
+  input.define("returnToMenu", "escape")
   
   -- menu/hud controls
   input.define("select", "return", " ")

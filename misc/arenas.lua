@@ -23,7 +23,7 @@ arenas[#arenas + 1] = {
 
 arenas[#arenas + 1] = {
   title = "Box in a Box",
-  name = "box-in-a-box",
+  name = "boxInABox",
   func = function(self, width, height)
     self.player.x = width / 2
     self.player.y = math.random(2) == 1 and 60 or height - 60

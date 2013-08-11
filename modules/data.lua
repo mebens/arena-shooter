@@ -34,8 +34,16 @@ function data.init()
   data.highscores = {}
   
   if love.filesystem.exists(data.filename) then
-    local t = loadstring(love.filesystem.read(data.filename))()
-    for k, v in pairs(t) do data[k] = v end
+    local fileData = love.filesystem.read(data.filename)
+    local status, t = pcall(loadstring(fileData))
+    
+    if status then
+      for k, v in pairs(t) do data[k] = v end
+    else
+      print("ERROR: Could not load data file. Options reset to default and highscores erased.")
+      debug.log("ERROR: Could not load data file.")
+      debug.log(fileData)
+    end
   end
   
   data.apply()

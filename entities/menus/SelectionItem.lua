@@ -25,7 +25,6 @@ function SelectionItem:update(dt)
   end
   
   if self.selectCallback and input.pressed("select") then
-    print(self.callbackSelf)
     self.selectCallback(self.callbackSelf)
   end
 end

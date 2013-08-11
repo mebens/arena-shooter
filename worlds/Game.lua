@@ -9,6 +9,7 @@ function Game:initialize(design, width, height)
   self.width = width or self.design.width or 1680
   self.height = height or self.design.height or 1050
   self.internalBarriers = {}
+  self.initialized = false
   self.paused = false
   self.over = false
   self.score = 0
@@ -47,20 +48,23 @@ function Game:initialize(design, width, height)
 end
 
 function Game:start()
-  fade.fadeIn()
-  
-  -- gotta wait for the physics shapes to set up
-  delay(0, function()
-    self:generateMasks()
-    self:add(self.background)
-    self:spawnGem()
-  end)
+  if not self.initialized then
+    self.initialized = true
+    fade.fadeIn()
+    
+    -- gotta wait for the physics shapes to set up
+    delay(0, function()
+      self:generateMasks()
+      self:add(self.background)
+      self:spawnGem()
+    end)
+  end
 end
 
 function Game:update(dt)
   if key.pressed.kp0 then
-    self.paused = not self.paused
-  elseif input.pressed("pause") then
+    self.paused = not self.paused -- for screenshots
+  elseif not self.slowmoDone and input.pressed("pause") then
     self:pause()
   end
   
@@ -87,8 +91,9 @@ function Game:update(dt)
         self.player:showSlowmo()
       end
     end
-  elseif self.canReset and input.pressed("reset") then
-    fade.fadeOut(self.reset, self)
+  elseif self.over then
+    if input.pressed(self.slowmoDone and "reset" or "preReset") then fade.fadeOut(self.reset, self) end
+    if self.slowmoDone and input.pressed("returnToMenu") then fade.fadeOut(self.returnToMenu, self) end
   end
   
   -- need to update slowmo tweens before the delta gets changed
@@ -111,9 +116,7 @@ function Game:gameOver()
   self.slowmoTween = AttrTween:new(self, 0.75, { deltaFactor = 0.1 }, ease.quadOut, self.stopGameOverSlowmo, self)
   self.slowmoTween:start()
   self.over = true
-  self.canReset = true
   self.hud.drawCursor = false
-  --self:gameOverSlowmoStopped()
   data.score(self)
 end
 
@@ -203,11 +206,16 @@ function Game:reset()
   ammo.world = Game:new(self.design, self.width, self.height)
 end
 
+function Game:returnToMenu()
+  ammo.world = MainMenu:new()
+end
+
 function Game:stopGameOverSlowmo()
-  self.slowmoTween = AttrTween:new(self, "1.5:2", { deltaFactor = 1 }, ease.quadOut, self.gameOverSlowmoStopped, self)
+  self.slowmoTween = AttrTween:new(self, "1.5:0.75", { deltaFactor = 1 }, ease.quadIn, self.gameOverSlowmoStopped, self)
   self.slowmoTween:start()
 end
 
 function Game:gameOverSlowmoStopped()
   self.hud:gameOver()
+  self.slowmoDone = true
 end

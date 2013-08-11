@@ -34,7 +34,6 @@ function data.init()
   data.highscores = {}
   
   if love.filesystem.exists(data.filename) then
-    print(love.filesystem.read(data.filename))
     local t = loadstring(love.filesystem.read(data.filename))()
     for k, v in pairs(t) do data[k] = v end
   end

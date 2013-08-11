@@ -22,7 +22,7 @@ end
 
 function drawBlackBg(alpha)
   love.graphics.storeColor()
-  love.graphics.setColor(0, 0, 0, alpha)
+  love.graphics.setColor(0, 0, 0, alpha or 255)
   love.graphics.rectangle("fill", 0, 0, love.graphics.width, love.graphics.height)
   love.graphics.resetColor()
 end

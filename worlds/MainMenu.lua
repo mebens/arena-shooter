@@ -3,21 +3,21 @@ MainMenu = class("MainMenu", World)
 function MainMenu:initialize()
   World.initialize(self)
   self.menuY = 100
-  self.fade = Fade:new(0.5, true)
   self.background = MenuBackground:new()
   
   self.menu = Menu:new(self.menuY)
   self.menu:add(MenuItem:new("Play", self.play, self))
   self.menu:add(MenuItem:new("Options", self.showOptions, self))
   self.menu:add(MenuItem:new("Quit", self.quit, self))
-  self.arenas = ArenasMenu:new(self.menuY, false, self.menu, self.fade)
+  self.arenas = ArenasMenu:new(self.menuY, false, self.menu)
   self.options = OptionsMenu:new(self.menuY, false, self.menu)
   self:add(self.fade, self.menu, self.options, self.arenas)
 end
 
 function MainMenu:start()
   self.background:start()
-  self.fade:fadeIn()
+  fade.alpha = 255
+  fade.fadeIn()
 end
 
 function MainMenu:update(dt)

@@ -13,13 +13,12 @@ function PauseMenu:initialize()
   self.menu:add(MenuItem:new("Quit", self.quit))
   
   self.options = OptionsMenu:new(self.menuY, false, self.menu)
-  self.fade = Fade:new()
-  self:add(self.fade, self.menu, self.options)
+  self:add(self.menu, self.options)
 end
 
 function PauseMenu:start()
   self.menu:activate(1)
-  self.fade.alpha = 0
+  fade.alpha = 0
 end
 
 function PauseMenu:draw()
@@ -35,7 +34,7 @@ function PauseMenu:resume()
 end
 
 function PauseMenu:reset()
-  self.fade:fadeOut(self.resetFadeDone, self)
+  fade.fadeOut(self.resetFadeDone, self)
 end
 
 function PauseMenu:showOptions()
@@ -43,7 +42,7 @@ function PauseMenu:showOptions()
 end
 
 function PauseMenu:mainMenu()
-  self.fade:fadeOut(self.menuFadeDone, self)
+  fade.fadeOut(self.menuFadeDone, self)
 end
 
 function PauseMenu:quit()

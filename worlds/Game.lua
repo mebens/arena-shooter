@@ -23,14 +23,12 @@ function Game:initialize(design, width, height)
   self.slowmoFadeTime = 0.3
   
   self.camera = GameCamera:new()
-  self.fade = Fade:new(0.5, true)
   self.hud = HUD:new()
   self.player = Player:new(self.width / 2, self.height / 2)
   self.background = Background:new()
   
   self:setupLayers{
     postfx.include,
-    [-2] = 0, -- fade
     [-1] = 0, -- HUD
     [0] = 1, -- in-world HUD
     postfx.exclude,
@@ -43,14 +41,13 @@ function Game:initialize(design, width, height)
     [7] = 1 -- background
   }
   
-  self:add(self.fade, self.hud, self.player)
+  self:add(self.hud, self.player)
   self.design.func(self, self.width, self.height)
   self:addListener("gem.collected", self.gemCollected, self)
+  fade.fadeIn()
 end
 
 function Game:start()
-  self.fade:fadeIn()
-  
   -- gotta wait for the physics shapes to set up
   delay(0, function()
     self:generateMasks()
@@ -73,7 +70,6 @@ function Game:update(dt)
       self.slowmo = self.slowmo - dt
       
       if self.slowmo <= 0 or input.released("slowmo") then
-        if self.slowmoTween then self.slowmoTween:stop() end
         self.slowmoTween = AttrTween:new(self, self.slowmoFadeTime, { deltaFactor = 1 })
         self.slowmoTween:start()
         self.slowmoActive = false
@@ -84,7 +80,6 @@ function Game:update(dt)
       end
       
       if self.slowmo > 0 and input.pressed("slowmo") then
-        if self.slowmoTween then self.slowmoTween:stop() end
         self.slowmoTween = AttrTween:new(self, self.slowmoFadeTime, { deltaFactor = self.slowmoFactor })
         self.slowmoTween:start()
         self.slowmoActive = true
@@ -92,10 +87,11 @@ function Game:update(dt)
       end
     end
   elseif self.canReset and input.pressed("reset") then
-    self.fade:fadeOut(self.reset, self)
+    fade.fadeOut(self.reset, self)
   end
   
-  if self.slowmoTween then self.slowmoTween:update(dt) end -- gotta update slowmo tweens before the delta gets changed
+  -- need to update slowmo tweens before the delta gets changed
+  if self.slowmoTween and self.slowmoTween.active then self.slowmoTween:update(dt) end
   dt = dt * self.deltaFactor
   _G.dt = dt
   postfx.update(dt)
@@ -111,12 +107,12 @@ end
 
 function Game:gameOver()
   if self.slowmoTween then self.slowmoTween:stop() end
-  --self.slowmoTween = AttrTween:new(self, 1.5, { deltaFactor = 0.1 }, ease.quadOut, self.stopGameOverSlowmo, self)
-  --self.slowmoTween:start()
+  self.slowmoTween = AttrTween:new(self, 0.75, { deltaFactor = 0.1 }, ease.quadOut, self.stopGameOverSlowmo, self)
+  self.slowmoTween:start()
   self.over = true
   self.canReset = true
   self.hud.drawCursor = false
-  self:gameOverSlowmoStopped()
+  --self:gameOverSlowmoStopped()
   data.score(self)
 end
 
@@ -177,11 +173,10 @@ end
 function Game:generateMasks()
   self.backgroundMask = love.graphics.newCanvas(self.width, self.height)
   love.graphics.setCanvas(self.backgroundMask)
-  love.graphics.storeColor()
   
   -- initial blank slate
-  love.graphics.setColor(0, 0, 0)
-  love.graphics.rectangle("fill", 0, 0, self.width, self.height)
+  drawBlackBg()
+  love.graphics.storeColor()
   love.graphics.setColor(255, 255, 255)
   
   -- external barrier
@@ -198,6 +193,8 @@ function Game:generateMasks()
     love.graphics.polygon("fill", v:getWorldPoints(v.shape:getPoints()))
   end
   
+  love.graphics.resetColor()
+  love.graphics.setCanvas()
   self.gemMask = self.backgroundMask:getImageData()
 end
 
@@ -206,7 +203,7 @@ function Game:reset()
 end
 
 function Game:stopGameOverSlowmo()
-  self.slowmoTween = AttrTween:new(self, "1.5:0.2", { deltaFactor = 1 }, ease.quadOut, self.gameOverSlowmoStopped, self)
+  self.slowmoTween = AttrTween:new(self, "1.5:2", { deltaFactor = 1 }, ease.quadOut, self.gameOverSlowmoStopped, self)
   self.slowmoTween:start()
 end
 

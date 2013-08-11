@@ -19,12 +19,12 @@ require("misc.GameCamera")
 require("misc.EditorCamera")
 
 require("modules.data")
+require("modules.fade")
 debug.include(require("modules.commands"))
 require("modules.effects.bloom")
 require("modules.effects.blur")
 require("modules.effects.noise")
 
-require("entities.Fade")
 require("entities.HUD")
 require("entities.Barrier")
 require("entities.ExternalBarrier")
@@ -111,12 +111,14 @@ function love.update(dt)
   end
   
   ammo.update(dt)
+  fade.update(dt)
   debug.update(dt)
   input.update()
 end
 
 function love.draw()
   ammo.draw()
+  fade.draw()
   debug.draw()
 end
 

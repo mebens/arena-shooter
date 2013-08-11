@@ -13,7 +13,7 @@ end
 
 function MenuBackground:start()
   -- removing this stuff like this is a bit messy, but oh well
-  delay(0, function() self:remove(self.fade, self.hud, self.player) end)
+  delay(0, function() self:remove(self.hud, self.player) end)
   self:generateMasks()
 end
 

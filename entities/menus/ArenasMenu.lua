@@ -1,8 +1,7 @@
 ArenasMenu = class("ArenasMenu", Menu)
 
-function ArenasMenu:initialize(y, active, parent, fade)
+function ArenasMenu:initialize(y, active, parent)
   Menu.initialize(self, y, active, parent)
-  self.fade = fade
   local arenaList = {}
   for i, v in ipairs(arenas) do arenaList[i] = v.title end
   
@@ -14,7 +13,7 @@ function ArenasMenu:initialize(y, active, parent, fade)
 end
 
 function ArenasMenu:start()
-  self.fade:fadeOut(function()
+  fade.fadeOut(function()
     ammo.world = Game:new(arenas[self.selection.current])
   end)
 end

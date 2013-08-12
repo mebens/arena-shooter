@@ -10,21 +10,11 @@ end
 
 function InternalBarrier:added()
   Barrier.added(self)
-  local w = self.width
-  local h = self.height
   
   if self.numSides == 4 then
-    self.shape = love.physics.newRectangleShape(0, 0, w, h)
+    self.shape = love.physics.newRectangleShape(0, 0, self.width, self.height)
   else
-    local points = {}
-    local n = self.numSides
-    
-    for i = 0, n - 1 do
-      points[#points + 1] = w * math.cos(math.tau * (i / n))
-      points[#points + 1] = w * math.sin(math.tau * (i / n))
-    end
-    
-    self.shape = love.physics.newPolygonShape(unpack(points))
+    self.shape = love.physics.newPolygonShape(unpack(getRegularPolygon(self.numSides, self.width / 2)))
   end
   
   self.fixture = self:addShape(self.shape)

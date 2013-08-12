@@ -27,6 +27,20 @@ function drawBlackBg(alpha)
   love.graphics.resetColor()
 end
 
+function getRegularPolygon(sides, radius, x, y, angleOffset)
+  local points = {}
+  x = x or 0
+  y = y or 0
+  angleOffset = angleOffset or 0
+  
+  for i = 0, sides - 1 do
+    points[#points + 1] = x + radius * math.cos(math.tau * (i / sides) + angleOffset)
+    points[#points + 1] = y + radius * math.sin(math.tau * (i / sides) + angleOffset)
+  end
+  
+  return points
+end
+
 function setMouseCoords(world)
   mouse.x = love.mouse.getX(world.camera)
   mouse.y = love.mouse.getY(world.camera)

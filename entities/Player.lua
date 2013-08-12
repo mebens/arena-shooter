@@ -18,7 +18,7 @@ Player.weapons[#Player.weapons + 1] = {
 
 Player.weapons[#Player.weapons + 1] = {
   name = "missile",
-  sides = 4,
+  sides = 6,
   sustainedFire = false,
   time = 0.5,
   fire = function(self)
@@ -41,6 +41,15 @@ for i, v in ipairs(Player.weapons) do
   love.graphics.pop()
   love.graphics.setCanvas()
   v.image = love.graphics.newImage(canvas:getImageData())
+end
+
+local function getMidpoint(p1, points)
+  local p2 = (p1 + 1) % #points + 1 -- second index
+  local x1, y1 = points[p1], points[p1 + 1]
+  local x2, y2 = points[p2], points[p2 + 1]
+  local angle = math.angle(x1, y1, x2, y2)
+  local dist = math.distance(x1, y1, x2, y2) / 2
+  return x1 + dist * math.cos(angle), y1 + dist * math.sin(angle)
 end
 
 function Player:initialize(x, y)
@@ -128,18 +137,19 @@ end
 
 function Player:draw()
   local weaponRadius = 1.25
-
+  local uiWidth = self.width * .75
+  
   if self.slowmoColor[4] > 0 then
     weaponRadius = 1.05
     love.graphics.setColor(self.slowmoColor)
     love.graphics.setLineWidth(6)
-    drawArc(self.uiPos.x, self.uiPos.y, self.width / 1.2, 0, math.tau * (self.world.slowmo / self.world.maxSlowmo), 30)
+    drawArc(self.uiPos.x, self.uiPos.y, uiWidth / 1.2, 0, math.tau * (self.world.slowmo / self.world.maxSlowmo), 30)
   end
   
   if self.weaponTimer < self.weapon.time then
     love.graphics.setColor(255, 255, 255)
     love.graphics.setLineWidth(3)
-    drawArc(self.uiPos.x, self.uiPos.y, self.width / weaponRadius, 0, math.tau * (self.weaponTimer / self.weapon.time), 30)
+    drawArc(self.uiPos.x, self.uiPos.y, uiWidth / weaponRadius, 0, math.tau * (self.weaponTimer / self.weapon.time), 30)
   end
   
   love.graphics.setLineWidth(1)    
@@ -187,40 +197,63 @@ end
 function Player:changeWeapon(weapon)
   if type(weapon) == "string" then
     weapon = Player.weapons[Player.weapons.index[weapon]]
+  elseif weapon then
+    weapon = Player.weapons[weapon]
+  elseif self.weapon then
+    -- make sure we don't pick the current weapon
+    local weapons = {}
+    
+    for k, v in pairs(Player.weapons.index) do
+      if k ~= self.weapon.name then weapons[#weapons + 1] = v end
+    end
+    
+    weapon = Player.weapons[weapons[math.random(1, #weapons)]]
   else
-    weapon = Player.weapons[weapon or math.random(1, #Player.weapons)]
+    weapon = Player.weapons[math.random(1, #Player.weapons)]
   end
-  --[[
+  
   if self.points then
     local diff = weapon.sides - self.weapon.sides
     local points = self.points
     
     if diff < 0 then
       -- remove points at random places
+      --local tweenTo = table.copy(weapon.points)
+      
       for i = 1, math.abs(diff) do
         local p = math.random(1, #points / 2)
         table.remove(points, p)
         table.remove(points, p)
       end
+      
+      tween(points, self.morphTime, weapon.points, nil, self.morphComplete, self)
     else
       -- add points in the middle of random edges
+      local addPoints = {}
+      local p
+      
       for i = 1, diff do
-        local p1 = math.random(1, #points / 2) -- first index
-        local p2 = (i + 1) % #points + 1 -- second index
-        local x1, y1 = points[p1], points[p1 + 1]
-        local x2, y2 = points[p2], points[p2 + 1]
-        local angle = math.angle(x1, y1, x2, y2)
-        local dist = math.distance(x1, y1, x2, y2) / 2
-        table.insert(points, p1 + 2, x1 + dist * math.cos(angle))
-        table.insert(points, p1 + 3, y1 + dist * math.sin(angle))
+        repeat
+          p = math.random(1, #points / 2)
+        until addPoints[p] == nil or diff > self.weapon.sides
+        
+        addPoints[p] = true
       end
+      
+      for i, _ in pairs(addPoints) do
+        local x, y = getMidpoint(i, points)
+        table.insert(points, i + 2, x)
+        table.insert(points, i + 3, y)
+      end
+      
+      tween(points, self.morphTime, weapon.points, nil, self.morphComplete, self)
     end
     
     self.morphing = true
-    tween(points, self.morphTime, weapon.points, nil, self.morphComplete, self)
+    
   else
     self.points = table.copy(weapon.points)
-  end]]
+  end
   
   self.image = weapon.image
   self.weapon = weapon
@@ -229,10 +262,13 @@ end
 
 function Player:constructShape(points)
   if self.fixture then self.fixture:destroy() end
-  self.fixture = self:addShape(love.physics.newPolygonShape(unpack(points)))
-  self.fixture:setCategory(2)
-  self:setMass(0.9)
-  self:setLinearDamping(5)
+  
+  delay(0, function()
+    self.fixture = self:addShape(love.physics.newPolygonShape(unpack(points)))
+    self.fixture:setCategory(2)
+    self:setMass(1)
+    self:setLinearDamping(5)
+  end)
 end
 
 function Player:morphComplete()

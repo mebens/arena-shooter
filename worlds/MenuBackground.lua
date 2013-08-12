@@ -12,9 +12,17 @@ function MenuBackground:initialize()
 end
 
 function MenuBackground:start()
-  -- removing this stuff like this is a bit messy, but oh well
-  delay(0, function() self:remove(self.hud, self.player) end)
-  self:generateMasks()
+  -- yeah, this is messy
+  self.player.active = false
+  self.player.visible = false
+  self.player.invincible = true
+  delay(1, function() self:remove(self.player) end)
+  
+  delay(0, function()
+    self:remove(self.hud)
+    self:generateMasks()
+    self:add(self.background)
+  end)
 end
 
 function MenuBackground:update(dt)

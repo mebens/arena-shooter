@@ -63,6 +63,7 @@ function love.load()
   postfx.init()
   data.init()
   debug.init()
+  blur.init()
   postfx.addList(bloom, noise)
   
   -- misc

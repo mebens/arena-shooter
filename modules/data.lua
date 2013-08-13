@@ -64,6 +64,7 @@ function data.apply()
     data.safeResolution = data.resolution
     data.safeFullscreen = data.fullscreen
     postfx.reset()
+    blur.reset()
     if Game.id then Game.id:resolutionChanged() end
     return true
   else
@@ -86,7 +87,7 @@ function data.resetOptions()
   data.resolution = 4
   data.fullscreen = false
   data.vsync = true
-  data.blur = true
+  data.blur = false
   data.bloom = true
   data.noise = true
   data.mouseGrab = false

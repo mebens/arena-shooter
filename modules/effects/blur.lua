@@ -1,46 +1,49 @@
 blur = {}
 blur.active = true
-blur.count = 10
-blur.alphaMultipler = 20
+blur.count = 5
+blur.totalAlpha = 180
 blur.time = 1 / 60
 blur.timer = 0
 
-function blur:init()
-  self.supported = postfx.supported
-  if self.supported then self:reset() end
+function blur.init()
+  blur.supported = postfx.supported
+  if blur.supported then blur.reset() end
 end
 
-function blur:draw(canvas, alternate)
-  if blur.timer < 0 then
+function blur.start()
+  if not blur.active then return end
+  
+  if blur.timer <= 0 then
     blur.timer = blur.timer + blur.time
-    
-    local c = table.remove(self.canvases)
-    self.canvases[self.count] = c
-    c:clear()
-    love.graphics.setCanvas(c)
-    love.graphics.draw(canvas, 0, 0)
+    local c = table.remove(blur.canvases, 1)
+    blur.canvases[blur.count] = c
   else
     blur.timer = blur.timer - love.timer.getDelta()
   end
   
-  love.graphics.setCanvas(alternate)
-  love.graphics.storeColor()
-  
-  for i = 1, self.count do
-    love.graphics.setColor(255, 255, 255, i * self.alphaMultipler)
-    love.graphics.draw(self.canvases[i])
-  end
-  
-  love.graphics.setColor(255, 255, 255, 255)
-  love.graphics.draw(canvas)
-  love.graphics.resetColor()
-  postfx.swap()
+  blur.canvases[blur.count]:clear()
+  blur.prevCanvas = love.graphics.getCanvas()
+  love.graphics.setCanvas(blur.canvases[blur.count])
 end
 
-function blur:reset()
-  self.canvases = {}
+function blur.stop()
+  if not blur.active then return end
+  love.graphics.setCanvas(blur.prevCanvas)
+  love.graphics.storeColor()
+    
+  for i = 1, blur.count do
+    love.graphics.setColor(255, 255, 255, i == blur.count and 255 or i * (blur.totalAlpha / (blur.count - 1)))
+    love.graphics.draw(blur.canvases[i])
+  end
   
-  for i = 1, self.count do
-    self.canvases[i] = love.graphics.newCanvas(love.graphics.width, love.graphics.height)
+  love.graphics.setColor(255, 255, 255)
+  love.graphics.resetColor()
+end
+
+function blur.reset()
+  blur.canvases = {}
+  
+  for i = 1, blur.count do
+    blur.canvases[i] = love.graphics.newCanvas(love.graphics.width, love.graphics.height)
   end
 end

@@ -29,16 +29,14 @@ function Game:initialize(design, width, height)
   self.background = Background:new()
   
   self:setupLayers{
-    postfx.include,
-    [-1] = 0, -- HUD
-    [0] = 1, -- in-world HUD
-    postfx.exclude,
+    [-1] = { 0, post = postfx.include }, -- HUD
+    [0] = { 1, pre = postfx.exclude }, -- in-world HUD
     [1] = 1, -- barrier
-    [2] = 1, -- player
+    [2] = { 1, post = blur.stop }, -- player
     [3] = 1, -- enemy
     [4] = 1, -- missile
     [5] = 1, -- gem
-    [6] = 1, -- particles
+    [6] = { 1, pre = blur.start }, -- particles
     [7] = 1 -- background
   }
   

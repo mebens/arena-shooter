@@ -64,3 +64,17 @@ arenas[#arenas + 1] = {
     self:add(EnemySpawner:new(width / 2, 120, 1.5), EnemySpawner:new(width / 2, width - 120, 1.5))
   end
 }
+
+arenas[#arenas + 1] = {
+  title = "Empty Showcase",
+  name = "emptyShowcase",
+  width = 1680,
+  height = 1050,
+  func = function(self, width, height)
+    self:createExternalBarrier(4)
+    self:addInternalBarrier(
+      InternalBarrier:new(8, width / 4, height / 2, width / 6),
+      InternalBarrier:new(8, width * .75, height / 2, width / 6)
+    )
+  end
+}

@@ -1,8 +1,5 @@
 Missile = class("Missile", PhysicalEntity)
 Missile.static.speed = 1200
-Missile.static.shakeDistance = 450
-Missile.static.shakeAmount = 50
-Missile.static.shakeTime = 0.09
 Missile.static.width = 30
 Missile.static.height = 10
 Missile.static.image = makeRectImage(Missile.width, Missile.height)
@@ -14,6 +11,12 @@ function Missile:initialize(x, y, angle, color)
   self.width = Missile.width
   self.height = Missile.height
   self.angle = angle
+  self.shakeDistance = 450
+  self.shakeAmount = 50
+  self.shakeTime = 0.09
+  self.minShrapnel = 50
+  self.maxShrapnel = 60
+  
   self.velx = Missile.speed * math.cos(angle)
   self.vely = Missile.speed * math.sin(angle)
   self.image = Missile.image
@@ -40,7 +43,6 @@ end
 
 function Missile:added()
   self:setupBody()
-  self:setBullet(true)
   self.fixture = self:addShape(love.physics.newRectangleShape(self.width, self.height))
   self.fixture:setMask(2)
   self.fixture:setSensor(true)
@@ -79,12 +81,12 @@ function Missile:collided(other, fixture, otherFixture, contact)
 end
 
 function Missile:explode()
-  Shrapnel:explosion(self.x, self.y, math.random(40, 50), self.color, self.world)
+  Shrapnel:explosion(self.x, self.y, math.random(self.minShrapnel, self.maxShrapnel), self.color, self.world)
   self.dead = true
   self.particles:setEmissionRate(0)
   self.fixture:setMask(1, 2)
   
   -- camera shake
-  local distScale = math.min(math.abs(math.distance(self.x, self.y, self.world.player.x, self.world.player.y)) / Missile.shakeDistance, 1)
-  self.world.camera:shake(math.scale(distScale, 0, 1, 1, 0) * Missile.shakeAmount, Missile.shakeTime)
+  local distScale = math.min(math.abs(math.distance(self.x, self.y, self.world.player.x, self.world.player.y)) / self.shakeDistance, 1)
+  self.world.camera:shake(math.scale(distScale, 0, 1, 1, 0) * self.shakeAmount, self.shakeTime)
 end

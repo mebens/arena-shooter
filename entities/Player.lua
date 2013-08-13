@@ -19,7 +19,7 @@ Player.weapons[#Player.weapons + 1] = {
 }
 
 Player.weapons[#Player.weapons + 1] = {
-  name = "minigun",
+  name = "missile",
   sides = 4,
   sustainedFire = false,
   time = 0.3,
@@ -27,7 +27,7 @@ Player.weapons[#Player.weapons + 1] = {
 }
 
 Player.weapons[#Player.weapons + 1] = {
-  name = "missile",
+  name = "minigun",
   sides = 5,
   sustainedFire = false,
   time = 0.6,
@@ -38,8 +38,11 @@ Player.weapons[#Player.weapons + 1] = {
   name = "detonated",
   sides = 6,
   sustainedFire = false,
-  time = 0.8,
-  fire = missileFunc
+  time = 1,
+  fire = function(self)
+    self.world:add(DetonatedMissile:new(self.x, self.y, self.angle, self.color))
+    self:animate(0.05, { scale = 0.8 }, nil, self.animate, self, 0.3, { scale = 1 })
+  end
 }
 
 for i, v in ipairs(Player.weapons) do

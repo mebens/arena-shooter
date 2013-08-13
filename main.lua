@@ -35,6 +35,7 @@ require("entities.Enemy")
 require("entities.EnemySpawner")
 require("entities.ExplosionChunk")
 require("entities.Missile")
+require("entities.DetonatedMissile")
 require("entities.Shrapnel")
 require("entities.MissileSpawner")
 require("entities.Background")
@@ -76,7 +77,7 @@ function love.load()
   input.define("up", "w", "up")
   input.define("down", "s", "down")
   input.define{"fire", mouse = "l"}
-  input.define{"missile", mouse = "r"}
+  input.define{"detonate", mouse = "r"}
   
   -- world controls
   input.define("slowmo", " ")

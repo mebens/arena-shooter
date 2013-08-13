@@ -5,26 +5,41 @@ Player.static.maxLives = 3
 Player.static.weapons = {}
 Player.weapons.index = {}
 
+local function missileFunc(self)
+  self.world:add(Missile:new(self.x, self.y, self.angle, self.color))
+  self:animate(0.05, { scale = 0.8 }, nil, self.animate, self, 0.3, { scale = 1 })
+end
+
 Player.weapons[#Player.weapons + 1] = {
   name = "laser",
   sides = 3,
   sustainedFire = false,
   time = 0.2,
-  fire = function(self)
-    self.world:add(Missile:new(self.x, self.y, self.angle, self.color))
-    self:animate(0.05, { scale = 1 }, nil, self.animate, self, 0.3, { scale = 1 })
-  end
+  fire = missileFunc
+}
+
+Player.weapons[#Player.weapons + 1] = {
+  name = "minigun",
+  sides = 4,
+  sustainedFire = false,
+  time = 0.3,
+  fire = missileFunc
 }
 
 Player.weapons[#Player.weapons + 1] = {
   name = "missile",
+  sides = 5,
+  sustainedFire = false,
+  time = 0.6,
+  fire = missileFunc
+}
+
+Player.weapons[#Player.weapons + 1] = {
+  name = "detonated",
   sides = 6,
   sustainedFire = false,
-  time = 0.5,
-  fire = function(self)
-    self.world:add(Missile:new(self.x, self.y, self.angle, self.color))
-    self:animate(0.05, { scale = 0.8 }, nil, self.animate, self, 0.3, { scale = 1 })
-  end
+  time = 0.8,
+  fire = missileFunc
 }
 
 for i, v in ipairs(Player.weapons) do
@@ -133,6 +148,17 @@ function Player:update(dt)
   local drawSlowmo = self.maxSlowmoTimer < self.hideSlowmoTime
   if self.drawSlowmo and not drawSlowmo then self:hideSlowmo() end
   self.drawSlowmo = drawSlowmo
+  
+  -- temporary weapon changing
+  if key.pressed["1"] then
+    self:changeWeapon(1)
+  elseif key.pressed["2"] then
+    self:changeWeapon(2)
+  elseif key.pressed["3"] then
+    self:changeWeapon(3)
+  elseif key.pressed["4"] then
+    self:changeWeapon(4)
+  end
 end
 
 function Player:draw()
@@ -213,44 +239,37 @@ function Player:changeWeapon(weapon)
   end
   
   if self.points then
+    self.points = table.copy(self.weapon.points) -- make sure the points are what they should be
     local diff = weapon.sides - self.weapon.sides
     local points = self.points
     
+    -- this can't go further than the halving/doubling of points
     if diff < 0 then
-      -- remove points at random places
-      --local tweenTo = table.copy(weapon.points)
+      local tweenTo = table.copy(weapon.points)
+      local indicies = {}
       
-      for i = 1, math.abs(diff) do
-        local p = math.random(1, #points / 2)
-        table.remove(points, p)
-        table.remove(points, p)
+      for i = 0, math.min(math.abs(diff), self.weapon.sides / 2) - 1 do
+        local index = i * 2 + 1
+        local insert = index + i * 2 -- to compensate for the added points
+        local x, y = getMidpoint(index, weapon.points)
+        table.insert(tweenTo, insert + 2, x)
+        table.insert(tweenTo, insert + 3, y)
+        table.insert(indicies, insert)
       end
       
-      tween(points, self.morphTime, weapon.points, nil, self.morphComplete, self)
+      tween(points, self.morphTime, tweenTo, nil, self.morphComplete, self)
     else
-      -- add points in the middle of random edges
-      local addPoints = {}
-      local p
-      
-      for i = 1, diff do
-        repeat
-          p = math.random(1, #points / 2)
-        until addPoints[p] == nil or diff > self.weapon.sides
-        
-        addPoints[p] = true
-      end
-      
-      for i, _ in pairs(addPoints) do
-        local x, y = getMidpoint(i, points)
-        table.insert(points, i + 2, x)
-        table.insert(points, i + 3, y)
+      for i = 0, math.min(diff, self.weapon.sides) - 1 do
+        local index = i * 4 + 1 
+        local x, y = getMidpoint(index, points)
+        table.insert(points, index + 2, x)
+        table.insert(points, index + 3, y)
       end
       
       tween(points, self.morphTime, weapon.points, nil, self.morphComplete, self)
     end
     
     self.morphing = true
-    
   else
     self.points = table.copy(weapon.points)
   end
@@ -261,7 +280,10 @@ function Player:changeWeapon(weapon)
 end
 
 function Player:constructShape(points)
-  if self.fixture then self.fixture:destroy() end
+  if self.fixture then
+    self.fixture:destroy()
+    self.fixture = nil
+  end
   
   delay(0, function()
     self.fixture = self:addShape(love.physics.newPolygonShape(unpack(points)))
@@ -286,7 +308,9 @@ function Player:flashOn()
   if self.flashes > self.flashCount then
     complete = nil
     self.flashes = 0
-    self.fixture:setMask()
+    
+    -- player might be morphing shape (which means the fixture might not be there)
+    if self.fixture then self.fixture:setMask() end
   end
   
   tween(self.color, self.flashTime, { [4] = 255 }, nil, complete, self)

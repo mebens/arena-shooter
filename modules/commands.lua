@@ -10,6 +10,11 @@ function t:inv()
   return "Player is " .. (ammo.world.player.invincible and "now" or "no longer") .. " invincible."
 end
 
+function t:god()
+  debug.runCommand("slowmo 10000")
+  debug.runCommand("inv")
+end
+
 function t:dtf(factor)
   ammo.world.deltaFactor = tonumber(factor)
 end

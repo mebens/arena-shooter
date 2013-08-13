@@ -55,7 +55,6 @@ require("worlds.Editor")
 function love.load()
   -- assets
   assets.loadFont("quantico.ttf", { 16, 20, 32, 40, 64 }, "main")
-  assets.loadImage("crosshair.png")
   assets.loadEffect("bloom.frag")
   assets.loadEffect("noise.frag")
   

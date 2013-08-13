@@ -5,6 +5,27 @@ HUD.static.lifeImage = makeRectImage(HUD.lifeImageWidth, HUD.lifeImageHeight, 25
 HUD.static.lostLifeImage = makeRectImage(HUD.lifeImageWidth, HUD.lifeImageHeight, 255, 255, 255, 150)
 HUD.static.lostLifeParticle = makeRectImage(6, 6, 255, 255, 255, 230)
 
+do
+  local length = 7
+  local thickness = 3
+  local space = 5
+  
+  -- for some reason I have to add one to get the crosshair to display right
+  local canvas = love.graphics.newCanvas(length * 2 + space + 1, length * 2 + space + 1)
+  love.graphics.setCanvas(canvas)
+  love.graphics.storeColor()
+  love.graphics.setColor(255, 255, 255)
+  
+  love.graphics.rectangle("fill", 0, length + space / 2 - thickness / 2, length, thickness) -- left
+  love.graphics.rectangle("fill", length + space, length + space / 2 - thickness / 2, length, thickness) -- right
+  love.graphics.rectangle("fill", length + space / 2 - thickness / 2, 0, thickness, length) -- top
+  love.graphics.rectangle("fill", length + space / 2 - thickness / 2, length + space, thickness, length) -- bottom
+  
+  love.graphics.resetColor()
+  love.graphics.setCanvas()
+  HUD.static.crosshairImage = love.graphics.newImage(canvas:getImageData())
+end
+
 function HUD:initialize()
   Entity.initialize(self)
   self.layer = -1
@@ -104,7 +125,7 @@ function HUD:draw()
   end
   
   if self.drawCursor and not self.world.paused then
-    self:drawImage(assets.images.crosshair, love.mouse.getRawPosition())
+    self:drawImage(HUD.crosshairImage, love.mouse.getRawPosition())
   end
 end
 

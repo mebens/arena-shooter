@@ -57,6 +57,12 @@ function Game:start()
       self:spawnGem()
     end)
   end
+  
+  debug.addInfo("Enemies", function() return self:classCount(Enemy) end)
+end
+
+function Game:stop()
+  debug.removeInfo("Enemies")
 end
 
 function Game:update(dt)

@@ -13,15 +13,56 @@ end
 Player.weapons[#Player.weapons + 1] = {
   name = "laser",
   sides = 3,
-  sustainedFire = false,
-  time = 0.2,
-  fire = missileFunc
+  sustained = true,
+  time = 0.6,
+  disableTime = 1,
+  rechargeRate = 0.5,
+  
+  fire = function(self)
+    self.laserBeamLength = math.distance(0, 0, self.world.width, self.world.height) * 2
+    
+    self.world:rayCast(
+      self.x,
+      self.y,
+      self.x + self.laserBeamLength * math.cos(self.angle),
+      self.y + self.laserBeamLength * math.sin(self.angle),
+      
+      function(fixture, x, y, xn, yn, fraction)
+        local e = fixture:getUserData()
+        
+        if instanceOf(Enemy, e) then
+          delay(0, function() e:die() end) -- for some reason a delay is necessary for the enemies to be removed properly
+        elseif instanceOf(Barrier, e) then
+          self.laserBeamLength = math.distance(self.x, self.y, x, y)
+          return 0
+        end
+        
+        return 1
+      end
+    )
+  end,
+  
+  draw = function(self)
+    if self.firing then
+      love.graphics.setColor(self.color)
+      love.graphics.setLineWidth(3)
+      
+      love.graphics.line(
+        self.x,
+        self.y,
+        self.x + self.laserBeamLength * math.cos(self.angle),
+        self.y + self.laserBeamLength * math.sin(self.angle)
+      )
+      
+      love.graphics.setLineWidth(1)
+    end
+  end
 }
 
 Player.weapons[#Player.weapons + 1] = {
   name = "missile",
   sides = 4,
-  sustainedFire = false,
+  sustained = false,
   time = 0.3,
   fire = missileFunc
 }
@@ -29,7 +70,7 @@ Player.weapons[#Player.weapons + 1] = {
 Player.weapons[#Player.weapons + 1] = {
   name = "minigun",
   sides = 5,
-  sustainedFire = false,
+  sustained = false,
   time = 0.6,
   fire = missileFunc
 }
@@ -37,7 +78,7 @@ Player.weapons[#Player.weapons + 1] = {
 Player.weapons[#Player.weapons + 1] = {
   name = "detonated",
   sides = 6,
-  sustainedFire = false,
+  sustained = false,
   time = 1,
   fire = function(self)
     self.world:add(DetonatedMissile:new(self.x, self.y, self.angle, self.color))
@@ -134,11 +175,33 @@ function Player:update(dt)
     self.uiPos[axis] = val + (self[axis] - val) * self.uiSpeed * dt
   end
   
-  if self.weaponTimer > 0 then
-    self.weaponTimer = self.weaponTimer - dt
-  elseif input.pressed("fire") then
-    self.weaponTimer = self.weaponTimer + self.weapon.time
-    self.weapon.fire(self)
+  if self.weapon.sustained then
+    -- sustained fire, heat based
+    
+    if self.weaponDisableTimer > 0 then
+      self.weaponDisableTimer = self.weaponDisableTimer - dt
+    elseif input.down("fire") then
+      self.weaponTimer = self.weaponTimer + dt
+      
+      if self.weaponTimer > self.weapon.time then
+        self.weaponDisableTimer = self.weapon.disableTime
+        self.firing = false
+      else
+        self.firing = true
+        self.weapon.fire(self)
+      end
+    elseif self.weaponTimer > 0 then
+      self.firing = false
+      self.weaponTimer = self.weaponTimer - dt * self.weapon.rechargeRate
+    end
+  else
+    -- single shot
+    if self.weaponTimer > 0 then
+      self.weaponTimer = self.weaponTimer - dt
+    elseif input.pressed("fire") then
+      self.weaponTimer = self.weaponTimer + self.weapon.time
+      self.weapon.fire(self)
+    end
   end
   
   if self.world.slowmo >= self.world.maxSlowmo then
@@ -152,7 +215,7 @@ function Player:update(dt)
   if self.drawSlowmo and not drawSlowmo then self:hideSlowmo() end
   self.drawSlowmo = drawSlowmo
   
-  -- temporary weapon changing
+  -- temporary weapon switching
   if key.pressed["1"] then
     self:changeWeapon(1)
   elseif key.pressed["2"] then
@@ -165,6 +228,8 @@ function Player:update(dt)
 end
 
 function Player:draw()
+  if self.weapon.draw then self.weapon.draw(self) end
+  
   local weaponRadius = 1.25
   local uiWidth = self.width * .75
   
@@ -175,9 +240,21 @@ function Player:draw()
     drawArc(self.uiPos.x, self.uiPos.y, uiWidth / 1.2, 0, math.tau * (self.world.slowmo / self.world.maxSlowmo), 30)
   end
   
-  if self.weaponTimer < self.weapon.time then
+  love.graphics.setLineWidth(3)
+  
+  if self.weapon.sustained and self.weaponTimer > 0 then
+    local ratio = math.min(self.weaponTimer / self.weapon.time, 1) -- make sure it's capped at 1
+    
+    if ratio > 0.75 then
+      local gb = math.scale(ratio, 0.75, 1, 255, 0)
+      love.graphics.setColor(255, gb, gb)
+    else
+      love.graphics.setColor(255, 255, 255)
+    end
+    
+    drawArc(self.uiPos.x, self.uiPos.y, uiWidth / weaponRadius, 0, math.tau * ratio, 30)
+  elseif self.weaponTimer < self.weapon.time then
     love.graphics.setColor(255, 255, 255)
-    love.graphics.setLineWidth(3)
     drawArc(self.uiPos.x, self.uiPos.y, uiWidth / weaponRadius, 0, math.tau * (self.weaponTimer / self.weapon.time), 30)
   end
   
@@ -279,6 +356,8 @@ function Player:changeWeapon(weapon)
   
   self.image = weapon.image
   self.weapon = weapon
+  self.weaponTimer = 0
+  self.weaponDisableTimer = 0
   self:constructShape(weapon.points)
 end
 

@@ -72,7 +72,7 @@ function HUD:initialize()
   }
   
   self.resetMsg = Text:new{
-    "Pres enter to play again.\nPress escape to return to the menu.",
+    "Press enter to play again.\nPress escape to return to the menu.",
     x = self.padding,
     align = "center",
     font = assets.fonts.main[16],

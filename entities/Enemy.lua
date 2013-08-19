@@ -11,6 +11,7 @@ function Enemy:initialize(x, y, color)
   self.width = Enemy.width
   self.height = Enemy.height
   self.speed = Enemy.moveForce
+  self.health = 10
   self.image = Enemy.image
   self.color = table.copy(color)
   self.scale = 0
@@ -33,6 +34,11 @@ end
 
 function Enemy:draw()
   self:drawImage()
+end
+
+function Enemy:damage(amount)
+  self.health = math.max(self.health - amount, 0)
+  if self.health == 0 then self:die() end
 end
 
 function Enemy:die()

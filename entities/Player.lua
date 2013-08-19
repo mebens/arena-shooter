@@ -43,7 +43,7 @@ Player.weapons[#Player.weapons + 1] = {
   end,
   
   draw = function(self)
-    if self.firing then
+    if self.firing and self.laserBeamLength then
       love.graphics.setColor(self.color)
       love.graphics.setLineWidth(3)
       
@@ -63,16 +63,42 @@ Player.weapons[#Player.weapons + 1] = {
   name = "missile",
   sides = 4,
   sustained = false,
-  time = 0.3,
-  fire = missileFunc
+  time = 0.6,
+  
+  fire = function(self)
+    self.world:add(Missile:new(self.x, self.y, self.angle, self.color))
+    self:animate(0.05, { scale = 0.8 }, nil, self.animate, self, 0.3, { scale = 1 })
+  end
 }
 
 Player.weapons[#Player.weapons + 1] = {
   name = "minigun",
   sides = 5,
-  sustained = false,
-  time = 0.6,
-  fire = missileFunc
+  sustained = true,
+  time = 100,
+  disableTime = 1,
+  fireTime = 0.05,
+  rechargeRate = 1.75,
+  deviation = math.tau / 50,
+  
+  fire = function(self, dt)
+    if self.fireTimer > 0 then
+      self.fireTimer = self.fireTimer - dt
+    else
+      self.weapon.spawnBullet(self, 1)
+      self.weapon.spawnBullet(self, -1)
+      self.fireTimer = self.weapon.fireTime
+    end
+  end,
+  
+  spawnBullet = function(self, sign)
+    self.world:add(Bullet:new(
+      self.x + self.width / 4 * math.cos(self.angle - math.tau / 4) * sign,
+      self.y + self.width / 4 * math.cos(self.angle - math.tau / 4) * sign,
+      self.angle - self.weapon.deviation / 2 + self.weapon.deviation * math.random(),
+      self.color
+    ))
+  end
 }
 
 Player.weapons[#Player.weapons + 1] = {
@@ -80,6 +106,7 @@ Player.weapons[#Player.weapons + 1] = {
   sides = 6,
   sustained = false,
   time = 1,
+  
   fire = function(self)
     self.world:add(DetonatedMissile:new(self.x, self.y, self.angle, self.color))
     self:animate(0.05, { scale = 0.8 }, nil, self.animate, self, 0.3, { scale = 1 })
@@ -188,7 +215,7 @@ function Player:update(dt)
         self.firing = false
       else
         self.firing = true
-        self.weapon.fire(self)
+        self.weapon.fire(self, dt)
       end
     elseif self.weaponTimer > 0 then
       self.firing = false
@@ -200,7 +227,7 @@ function Player:update(dt)
       self.weaponTimer = self.weaponTimer - dt
     elseif input.pressed("fire") then
       self.weaponTimer = self.weaponTimer + self.weapon.time
-      self.weapon.fire(self)
+      self.weapon.fire(self, dt)
     end
   end
   
@@ -230,11 +257,11 @@ end
 function Player:draw()
   if self.weapon.draw then self.weapon.draw(self) end
   
-  local weaponRadius = 1.25
+  local weaponRadius = 1.2
   local uiWidth = self.width * .75
   
   if self.slowmoColor[4] > 0 then
-    weaponRadius = 1.05
+    weaponRadius = 1.025
     love.graphics.setColor(self.slowmoColor)
     love.graphics.setLineWidth(6)
     drawArc(self.uiPos.x, self.uiPos.y, uiWidth / 1.2, 0, math.tau * (self.world.slowmo / self.world.maxSlowmo), 30)
@@ -245,8 +272,8 @@ function Player:draw()
   if self.weapon.sustained and self.weaponTimer > 0 then
     local ratio = math.min(self.weaponTimer / self.weapon.time, 1) -- make sure it's capped at 1
     
-    if ratio > 0.75 then
-      local gb = math.scale(ratio, 0.75, 1, 255, 0)
+    if ratio > 0.5 then
+      local gb = math.scale(ratio, 0.5, 1, 255, 0)
       love.graphics.setColor(255, gb, gb)
     else
       love.graphics.setColor(255, 255, 255)
@@ -357,6 +384,7 @@ function Player:changeWeapon(weapon)
   self.image = weapon.image
   self.weapon = weapon
   self.weaponTimer = 0
+  self.fireTimer = 0
   self.weaponDisableTimer = 0
   self:constructShape(weapon.points)
 end
